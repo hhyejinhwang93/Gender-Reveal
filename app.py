@@ -47,6 +47,7 @@ T = {
         "r1": "Small human.", "r2": "Big reveal energy.", "gather": "Gather your people. This is the good part.",
         "pop": "Let's pop the secret!", "rgirl": "It's a girl!", "rboy": "It's a boy!",
         "won": "Team {t} called it: {names}", "nobody": "Nobody guessed this one. Everyone wins!",
+        "sg": "Team pink skies", "sb": "Team blue skies",
         "host": "Host controls", "pin": "Host PIN", "secret": "The secret", "sel": "Select…",
         "save": "Save secret", "go": "Smash! Start the reveal", "reset": "Reset everything",
     },
@@ -66,6 +67,7 @@ T = {
         "r1": "두구두구두구.", "r2": "과연 결과는.", "gather": "지금부터 집중!",
         "pop": "눌러서 확인하기!", "rgirl": "루미는 공주님!", "rboy": "루미는 왕자님!",
         "won": "{t}이 맞혔어요: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
+        "sg": "핑크 팀", "sb": "블루 팀",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
         "save": "저장", "go": "펑! 공개 시작", "reset": "모두 초기화",
     },
@@ -85,6 +87,7 @@ T = {
         "r1": "咚咚咚咚咚…", "r2": "答案即將揭曉！", "gather": "接下來請集中注意力！",
         "pop": "Lumi 是…！！！", "rgirl": "Lumi 是小公主！", "rboy": "Lumi 是小王子！",
         "won": "{t}猜對了：{names}", "nobody": "沒有人猜中，大家都是贏家！",
+        "sg": "粉紅天空隊", "sb": "藍色天空隊",
         "host": "主辦人設定", "pin": "主辦人 PIN", "secret": "秘密性別", "sel": "請選擇…",
         "save": "儲存", "go": "砰！開始揭曉", "reset": "全部重設",
     },
@@ -151,6 +154,7 @@ html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-
 .sub{color:#7a7566;text-align:center;margin:.8rem 0 1.4rem;}
 .card{background:#fffdf7;border:1px solid #e0d6bf;border-radius:14px;padding:1rem 1.2rem;box-shadow:5px 5px 0 #e8e0c8;margin:1rem 0;color:#333;}
 .big-emoji{font-size:4.5rem;text-align:center;}
+[data-testid="stButton"],div.stElementContainer:has(>[data-testid="stButton"]){width:100%!important;}
 .stButton>button{width:100%;background:#b9513d;color:#fff;border:none;border-radius:10px;padding:.8rem;font-weight:700;box-shadow:0 4px 0 #8f3a2a;}
 .stButton>button:hover{background:#a64632;color:#fff;}
 .stTextInput input{border-radius:10px;border:1px solid #d8c9aa;padding:.8rem;}
@@ -158,7 +162,7 @@ html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-
 .team.g{background:#fde7ee;color:#F08784;} .team.b{background:#e0eff7;color:#70C2FA;}
 .team .n{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;}
 .team .l{font-weight:700;color:#000;} .team .who{font-size:.75rem;color:#777;margin-top:.4rem;}
-.rb{width:210px;margin:.5rem auto;animation:float 3.5s ease-in-out infinite;}
+.rb{width:min(78vw,320px);margin:.5rem auto;animation:float 3.5s ease-in-out infinite;}
 .float{animation:float 4s ease-in-out infinite;} .float.d{animation-delay:-2s;}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5;}
@@ -202,7 +206,7 @@ elif lang.startswith("Traditional"):
     HF, BF = "'Noto Serif TC'", "'Noto Sans TC'"
 else:
     HF, BF = "'Fraunces'", "'DM Sans'"
-PICK_REM = "1.5rem" if CJK else "1.9rem"
+PICK_REM = "1.6rem" if CJK else "2rem"
 if CJK:
     st.markdown(f"""<style>
 .hero{{font-family:{HF},serif!important;font-size:1.9rem!important;line-height:1.45!important;letter-spacing:0!important;font-weight:700!important;word-break:keep-all;}}
@@ -252,7 +256,7 @@ def round_balloon(text):
             "<ellipse cx='68' cy='62' rx='14' ry='28' fill='#fff' opacity='.12' transform='rotate(-25 68 62)'/>"
             "<path d='M92 214 L108 214 L100 228 Z' fill='#111'/>"
             "<path d='M100 228 C86 244 114 256 100 276' stroke='#555' fill='none' stroke-width='2'/>"
-            f"<text x='100' y='108' text-anchor='middle' dominant-baseline='central' font-family='Fraunces, serif' font-size='110' font-weight='800' fill='#fff'>{text}</text>"
+            f"<text x='100' y='108' text-anchor='middle' dominant-baseline='central' font-family='Fraunces, serif' font-size='140' font-weight='800' fill='#fff'>{text}</text>"
             "</svg></div>")
 
 
@@ -344,42 +348,41 @@ elif step == "countdown":
         go("name")
 
 elif step == "guess":
-    hero("♥", t["g1"], t["g2"])
+    hero("♥", t["g1"], t["g2"], colored=True)
 
-    def set_pick(v):
+    def choose(v):
         ss.pick = v
+        stt = load()
+        stt["votes"][ss.name] = {"guess": v, "country": ss.country}
+        save(stt)
+        ss.step = "votes"
 
     selected_css = ""
     if ss.pick:
         selected_css = (f".st-key-pick_{ss.pick} button{{border:3px solid #b9513d!important;"
                         "box-shadow:0 0 0 6px #e3d8ec!important;}")
     st.markdown(f"""<style>
+.block-container{{padding-left:.8rem!important;padding-right:.8rem!important;}}
+.st-key-pick_girl,.st-key-pick_boy,.st-key-pick_girl [data-testid="stButton"],.st-key-pick_boy [data-testid="stButton"]{{width:100%!important;}}
 .st-key-pick_girl button,.st-key-pick_boy button{{
-  width:100%;height:270px;border-radius:130px 130px 22px 22px;border:3px solid transparent!important;
-  box-shadow:none!important;background-repeat:no-repeat!important;background-position:center 26px!important;
-  background-size:130px!important;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1.2rem;}}
+  width:100%;height:auto;aspect-ratio:0.76;border-radius:120px 120px 26px 26px;border:3px solid transparent!important;
+  box-shadow:none!important;background-repeat:no-repeat!important;background-position:center 12%!important;
+  background-size:50% auto!important;display:flex;align-items:flex-end;justify-content:center;padding:0 0 1.1rem;}}
 .st-key-pick_girl button{{background-color:#fde7ee!important;background-image:url("{balloon_uri(PINK, PINK2)}")!important;}}
 .st-key-pick_boy button{{background-color:#e0eff7!important;background-image:url("{balloon_uri(BLUE, BLUE2)}")!important;}}
-.st-key-pick_girl button p,.st-key-pick_boy button p{{font-family:{HF},serif!important;font-weight:800;font-size:{PICK_REM};line-height:1.3;margin:0;}}
-.st-key-pick_girl button p{{color:#d9667a;}} .st-key-pick_boy button p{{color:#4a90b8;}}
+.st-key-pick_girl button p,.st-key-pick_boy button p{{font-family:{HF},serif!important;font-weight:800;font-size:{PICK_REM};line-height:1.2;margin:0;text-align:center;}}
+.st-key-pick_girl button p::after,.st-key-pick_boy button p::after{{display:block;font-family:{BF},sans-serif;font-weight:500;font-size:.72rem;margin-top:.5rem;opacity:.85;}}
+.st-key-pick_girl button p::after{{content:"{t['sg']}";}} .st-key-pick_boy button p::after{{content:"{t['sb']}";}}
+.st-key-pick_girl button p{{color:#F08784!important;}} .st-key-pick_boy button p{{color:#70C2FA!important;}}
 .st-key-pick_girl button:hover,.st-key-pick_boy button:hover{{filter:brightness(.97);}}
 {selected_css}
 </style>""", unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
     with c1:
-        st.button(t["girl"], key="pick_girl", on_click=set_pick, args=("girl",))
+        st.button(t["girl"], key="pick_girl", on_click=choose, args=("girl",))
     with c2:
-        st.button(t["boy"], key="pick_boy", on_click=set_pick, args=("boy",))
-
-    if st.button(t["mg"] + "  →"):
-        if ss.pick:
-            state = load()
-            state["votes"][ss.name] = {"guess": ss.pick, "country": ss.country}
-            save(state)
-            go("votes")
-        else:
-            st.warning(t["pick"])
+        st.button(t["boy"], key="pick_boy", on_click=choose, args=("boy",))
     if st.button(t["back"]):
         go("countdown")
 
@@ -421,21 +424,24 @@ elif step == "ready":
 
 elif step == "reveal":
     slot = st.empty()
+    for _ in range(4):
+        st.empty()  # covers leftovers from the previous page while counting down
     if ss.popped:
         for i in (3, 2, 1):
             slot.markdown(hero_html(f"{HOSTS} · {t['rev']}", t["r1"], t["r2"]) + round_balloon(i), unsafe_allow_html=True)
             time.sleep(1)
-        slot.empty()
         ss.popped = False
     secret = load()["secret"]
     is_girl = secret == "girl"
     c1_, c2_ = (PINK, PINK2) if is_girl else (BLUE, BLUE2)
     colors = ["#F08784", "#f7b6c8", "#fbd36b", "#c9a8ee", "#70C2FA", "#fff"] if is_girl else \
              ["#70C2FA", "#a9dbf5", "#fbd36b", "#c9a8ee", "#F08784", "#fff"]
-    st.markdown(confetti_html(colors), unsafe_allow_html=True)
-    st.markdown(f"<div class='rb' style='width:170px'>{hot_balloon(c1_, c2_)}</div>", unsafe_allow_html=True)
-    hero("✦ " + HOSTS, t["rgirl"] if is_girl else t["rboy"], "")
     winners = [n for n, v in state["votes"].items() if v["guess"] == secret]
     team = t["tg"] if is_girl else t["tb"]
-    st.markdown(f"<div class='card'>{t['won'].format(t=team, names=', '.join(winners)) if winners else t['nobody']}</div>",
-                unsafe_allow_html=True)
+    msg = t["won"].format(t=team, names=", ".join(winners)) if winners else t["nobody"]
+    slot.markdown(
+        confetti_html(colors)
+        + f"<div class='rb' style='width:170px'>{hot_balloon(c1_, c2_)}</div>"
+        + hero_html("✦ " + HOSTS, t["rgirl"] if is_girl else t["rboy"], "")
+        + f"<div class='card'>{msg}</div>",
+        unsafe_allow_html=True)
