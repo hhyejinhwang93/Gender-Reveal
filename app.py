@@ -19,7 +19,7 @@ TZ_BY_LANG = {
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
-DEBUG_DB = False   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
+DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -48,6 +48,7 @@ T = {
         "pop": "Let's pop the secret!", "rgirl": "It's a <span class='pk'>girl</span>!", "rboy": "It's a <span class='bl'>boy</span>!",
         "won": "Team {t} called it: {names}", "nobody": "Nobody guessed this one. Everyone wins!",
         "sg": "Team pink skies", "sb": "Team blue skies",
+        "nh": "Please remember the exact name you enter here, including capital and lowercase letters. You will need it to change your guess later.",
         "host": "Host controls", "pin": "Host PIN", "secret": "The secret", "sel": "Select…",
         "save": "Save secret", "go": "Smash! Start the reveal", "reset": "Reset everything",
     },
@@ -68,6 +69,7 @@ T = {
         "pop": "눌러서 확인하기!", "rgirl": "루미는 <span class='pk'>공주님</span>!", "rboy": "루미는 <span class='bl'>왕자님</span>!",
         "won": "{t}이 맞혔어요: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
         "sg": "핑크 팀", "sb": "블루 팀",
+        "nh": "여기에 입력한 이름을 대문자·소문자까지 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
         "save": "저장", "go": "펑! 공개 시작", "reset": "모두 초기화",
     },
@@ -88,6 +90,7 @@ T = {
         "pop": "Lumi 是…！！！", "rgirl": "Lumi 是<span class='pk'>小公主</span>！", "rboy": "Lumi 是<span class='bl'>小王子</span>！",
         "won": "{t}猜對了：{names}", "nobody": "沒有人猜中，大家都是贏家！",
         "sg": "粉紅天空隊", "sb": "藍色天空隊",
+        "nh": "請記住你在這裡輸入的名字（包含大小寫），之後想修改答案時需要輸入相同的名字。",
         "host": "主辦人設定", "pin": "主辦人 PIN", "secret": "秘密性別", "sel": "請選擇…",
         "save": "儲存", "go": "砰！開始揭曉", "reset": "全部重設",
     },
@@ -298,6 +301,8 @@ with st.sidebar:
                 ss.step, ss.popped = "intro", False
                 st.rerun()
 
+if state["started"] and ss.step in ("intro", "name", "countdown", "guess", "votes"):
+    ss.step = "ready"
 step = ss.step
 n_guests = len(state["votes"])
 
@@ -317,6 +322,7 @@ elif step == "name":
     hero("✦", t["n1"], t["n2"])
     ss.name = st.text_input(t["yn"], value=ss.name)
     ss.country = st.text_input("🌍 " + t["yc"], value=ss.country, placeholder="City, country")
+    st.caption("✎ " + t["nh"])
     if st.button(t["inn"] + "  →"):
         if ss.name.strip():
             ss.name = ss.name.strip()
@@ -353,8 +359,11 @@ elif step == "guess":
     hero("♥", t["g1"], t["g2"], colored=True)
 
     def choose(v):
-        ss.pick = v
         stt = load()
+        if stt["started"]:
+            ss.step = "ready"
+            return
+        ss.pick = v
         stt["votes"][ss.name] = {"guess": v, "country": ss.country}
         save(stt)
         ss.step = "votes"
