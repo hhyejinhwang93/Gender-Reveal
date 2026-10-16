@@ -12,7 +12,7 @@ import streamlit.components.v1 as components
 
 # ───────────── EDIT THESE ─────────────
 HOSTS = "Hyejin & Jay"                       # parents' names
-REVEAL_ISO = "2026-11-09T13:00:00+01:00"  # reveal date/time with UTC offset
+REVEAL_ISO = "2026-11-09T16:00:00+01:00"  # reveal date/time with UTC offset
 # 언어별로 보여줄 시간대 (Time zone shown for each language)
 TZ_BY_LANG = {
     "English": "Europe/Berlin",
@@ -49,6 +49,9 @@ T = {
         "won": "Team {t} called it: {names}", "nobody": "Nobody guessed this one. Everyone wins!",
         "sg": "Team pink skies", "sb": "Team blue skies",
         "bt": "Drumroll…|What is|Lumi's|gender?!",
+        "me_ok": "🎉 You guessed it right, {n}!", "me_no": "So close, {n}! You guessed {g}, but the answer is {a}.",
+        "late": "The reveal has already started, so your guess will not be in the winners' list, but you will still see your own result!",
+        "me_ask": "Did you vote? Enter the name you used to see your result.", "me_nf": "We couldn't find a vote under that name. Please check the spelling and capital letters.",
         "nh": "Please remember the exact name you enter here, including capital and lowercase letters. You will need it to change your guess later.",
         "host": "Host controls", "pin": "Host PIN", "secret": "The secret", "sel": "Select…",
         "save": "Save secret", "go": "Smash! Start the reveal", "reset": "Reset everything",
@@ -59,7 +62,7 @@ T = {
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
         "inn": "다음", "needn": "이름을 입력해주세요.",
-        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가기",
+        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가",
         "cnote": "공개 직전까지 예측을 바꿀 수 있어요.",
         "g1": "공주님일까요?", "g2": "왕자님일까요?", "girl": "공주님", "boy": "왕자님",
         "mg": "이걸로 할게요", "pick": "먼저 팀을 선택해주세요.",
@@ -71,7 +74,10 @@ T = {
         "won": "{t}이 맞혔어요: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
         "sg": "핑크 팀", "sb": "블루 팀",
         "bt": "두구두구두구|루미의|성별은?!!",
-        "nh": "여기에 입력한 이름을 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
+        "me_ok": "🎉 {n}님, 정답이에요! 맞히셨어요!", "me_no": "{n}님은 {g}을 선택하셨어요. 아쉽지만 정답은 {a}이에요!",
+        "late": "공개가 이미 시작되어서 맞힌 사람 명단에는 이름이 올라가지 않지만, 내 결과는 확인할 수 있어요!",
+        "me_ask": "투표하셨나요? 투표할 때 쓴 이름을 입력하면 내 결과를 볼 수 있어요.", "me_nf": "그 이름으로 한 투표를 찾지 못했어요. 철자와 대소문자를 확인해 주세요.",
+        "nh": "여기에 입력한 이름을 대문자·소문자까지 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
         "save": "저장", "go": "펑! 공개 시작", "reset": "모두 초기화",
     },
@@ -93,6 +99,9 @@ T = {
         "won": "{t}猜對了：{names}", "nobody": "沒有人猜中，大家都是贏家！",
         "sg": "粉紅天空隊", "sb": "藍色天空隊",
         "bt": "咚咚咚咚咚…|Lumi 的|性別是？！",
+        "me_ok": "🎉 {n}，你猜對了！", "me_no": "{n}，你選的是{g}，答案是{a}喔！",
+        "late": "揭曉已經開始，你的答案不會列入猜對名單，但你還是能看到自己的結果！",
+        "me_ask": "你有投票嗎？輸入投票時用的名字，就能看到你的結果。", "me_nf": "找不到這個名字的投票，請確認拼字與大小寫。",
         "nh": "請記住你在這裡輸入的名字（包含大小寫），之後想修改答案時需要輸入相同的名字。",
         "host": "主辦人設定", "pin": "主辦人 PIN", "secret": "秘密性別", "sel": "請選擇…",
         "save": "儲存", "go": "砰！開始揭曉", "reset": "全部重設",
@@ -143,6 +152,13 @@ def save(state):
             st.session_state["db_error"] = describe_error(e)
     with open(DATA_FILE, "w") as f:
         json.dump(state, f)
+
+
+def find_vote(votes, name):
+    if name in votes:
+        return name
+    low = name.strip().lower()
+    return next((n for n in votes if n.strip().lower() == low), None)
 
 
 # ───────────── STYLE ─────────────
@@ -329,8 +345,12 @@ with st.sidebar:
                 ss.step, ss.popped = "intro", False
                 st.rerun()
 
-if state["started"] and ss.step in ("intro", "name", "countdown", "guess", "votes"):
-    ss.step = "ready"
+if state["started"]:
+    voted = ss.name in state["votes"]
+    if ss.step == "votes" or (ss.step in ("countdown", "guess") and voted):
+        ss.step = "ready"
+    elif ss.step == "countdown":
+        ss.step = "guess"
 step = ss.step
 n_guests = len(state["votes"])
 
@@ -354,6 +374,13 @@ elif step == "name":
     if st.button(t["inn"] + "  →"):
         if ss.name.strip():
             ss.name = ss.name.strip()
+            if state["started"]:
+                match = find_vote(state["votes"], ss.name)
+                if match:
+                    ss.name = match
+                    ss.pick = state["votes"][match]["guess"]
+                    go("ready")
+                go("guess")
             existing = state["votes"].get(ss.name)
             if existing:
                 ss.pick = existing["guess"]
@@ -385,16 +412,22 @@ elif step == "countdown":
 
 elif step == "guess":
     hero("♥", t["g1"], t["g2"], colored=True)
+    if state["started"]:
+        st.caption("✦ " + t["late"])
 
     def choose(v):
         stt = load()
-        if stt["started"]:
-            ss.step = "ready"
+        late = bool(stt["started"])
+        if late and find_vote(stt["votes"], ss.name):
+            ss.step = "ready"  # already voted earlier: votes are locked now
             return
         ss.pick = v
-        stt["votes"][ss.name] = {"guess": v, "country": ss.country}
+        entry = {"guess": v, "country": ss.country}
+        if late:
+            entry["late"] = True
+        stt["votes"][ss.name] = entry
         save(stt)
-        ss.step = "votes"
+        ss.step = "ready" if late else "votes"
 
     selected_css = ""
     if ss.pick:
@@ -463,8 +496,7 @@ elif step == "ready":
 
 elif step == "reveal":
     slot = st.empty()
-    for _ in range(4):
-        st.empty()  # covers leftovers from the previous page while counting down
+    extra = [st.empty() for _ in range(4)]  # also covers leftovers from the previous page while counting down
     if ss.popped:
         for i in (3, 2, 1):
             slot.markdown(hero_html(f"{HOSTS} · {t['rev']}", t["r1"], t["r2"]) + round_balloon(i), unsafe_allow_html=True)
@@ -475,7 +507,7 @@ elif step == "reveal":
     c1_, c2_ = (PINK, PINK2) if is_girl else (BLUE, BLUE2)
     colors = ["#F08784", "#f7b6c8", "#fbd36b", "#c9a8ee", "#70C2FA", "#fff"] if is_girl else \
              ["#70C2FA", "#a9dbf5", "#fbd36b", "#c9a8ee", "#F08784", "#fff"]
-    winners = [n for n, v in state["votes"].items() if v["guess"] == secret]
+    winners = [n for n, v in state["votes"].items() if v["guess"] == secret and not v.get("late")]
     team = t["tg"] if is_girl else t["tb"]
     msg = t["won"].format(t=team, names=", ".join(winners)) if winners else t["nobody"]
     slot.markdown(
@@ -484,3 +516,20 @@ elif step == "reveal":
         + hero_html("✦ " + HOSTS, t["rgirl"] if is_girl else t["rboy"], "")
         + f"<div class='card'>{msg}</div>",
         unsafe_allow_html=True)
+
+    with extra[0].container():
+        me = ss.name if ss.name in state["votes"] else None
+        if not me:
+            st.caption(t["me_ask"])
+            typed = st.text_input(t["yn"], key="lookup_name")
+            if typed.strip():
+                me = find_vote(state["votes"], typed)
+                if not me:
+                    st.warning(t["me_nf"])
+        if me:
+            mine = state["votes"][me]["guess"]
+            answer = t["girl"] if is_girl else t["boy"]
+            if mine == secret:
+                st.success(t["me_ok"].format(n=me))
+            else:
+                st.info(t["me_no"].format(n=me, g=t["girl"] if mine == "girl" else t["boy"], a=answer))
