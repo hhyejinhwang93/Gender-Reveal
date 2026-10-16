@@ -19,7 +19,7 @@ TZ_BY_LANG = {
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
-DEBUG_DB = False   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
+DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -48,6 +48,7 @@ T = {
         "pop": "Let's pop the secret!", "rgirl": "It's a <span class='pk'>girl</span>!", "rboy": "It's a <span class='bl'>boy</span>!",
         "won": "Team {t} called it: {names}", "nobody": "Nobody guessed this one. Everyone wins!",
         "sg": "Team pink skies", "sb": "Team blue skies",
+        "bt": "Drumroll…|What is|Lumi's|gender?!",
         "nh": "Please remember the exact name you enter here, including capital and lowercase letters. You will need it to change your guess later.",
         "host": "Host controls", "pin": "Host PIN", "secret": "The secret", "sel": "Select…",
         "save": "Save secret", "go": "Smash! Start the reveal", "reset": "Reset everything",
@@ -58,7 +59,7 @@ T = {
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
         "inn": "다음", "needn": "이름을 입력해주세요.",
-        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가기",
+        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가",
         "cnote": "공개 직전까지 예측을 바꿀 수 있어요.",
         "g1": "공주님일까요?", "g2": "왕자님일까요?", "girl": "공주님", "boy": "왕자님",
         "mg": "이걸로 할게요", "pick": "먼저 팀을 선택해주세요.",
@@ -69,7 +70,8 @@ T = {
         "pop": "눌러서 확인하기!", "rgirl": "루미는 <span class='pk'>공주님</span>!", "rboy": "루미는 <span class='bl'>왕자님</span>!",
         "won": "{t}이 맞혔어요: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
         "sg": "핑크 팀", "sb": "블루 팀",
-        "nh": "여기에 입력한 이름을 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
+        "bt": "두구두구두구|루미의|성별은?!!",
+        "nh": "여기에 입력한 이름을 대문자·소문자까지 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
         "save": "저장", "go": "펑! 공개 시작", "reset": "모두 초기화",
     },
@@ -90,6 +92,7 @@ T = {
         "pop": "Lumi 是…！！！", "rgirl": "Lumi 是<span class='pk'>小公主</span>！", "rboy": "Lumi 是<span class='bl'>小王子</span>！",
         "won": "{t}猜對了：{names}", "nobody": "沒有人猜中，大家都是贏家！",
         "sg": "粉紅天空隊", "sb": "藍色天空隊",
+        "bt": "咚咚咚咚咚…|Lumi 的|性別是？！",
         "nh": "請記住你在這裡輸入的名字（包含大小寫），之後想修改答案時需要輸入相同的名字。",
         "host": "主辦人設定", "pin": "主辦人 PIN", "secret": "秘密性別", "sel": "請選擇…",
         "save": "儲存", "go": "砰！開始揭曉", "reset": "全部重設",
@@ -175,6 +178,15 @@ html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-
 @keyframes fall{0%{transform:translateY(0) rotate(0) translateX(0)}50%{transform:translateY(60vh) rotate(360deg) translateX(20px)}100%{transform:translateY(112vh) rotate(720deg) translateX(-10px)}}
 .count{font-family:'Fraunces',serif;font-weight:800;font-size:9rem;text-align:center;color:#b9513d;line-height:1.1;}
 .sel{text-align:center;font-weight:700;color:#b9513d;margin:.4rem 0;}
+.stApp{color:#2b2b2b;}
+.eyebrow{font-size:.85rem;}
+.sub{font-size:1.12rem;} .card{font-size:1.12rem;}
+.stButton button p{font-size:1.12rem;}
+[data-testid="stCaptionContainer"],.stCaption{font-size:1rem!important;color:#5f5a4c!important;}
+label,[data-testid="stWidgetLabel"] p{font-size:1.08rem!important;color:#222!important;}
+.stTextInput input{font-size:1.08rem!important;background:#fff!important;color:#222!important;}
+[data-baseweb="select"]>div{background:#fff!important;color:#222!important;}
+.team .l{font-size:1.1rem;} .team .who{font-size:.9rem;}
 [data-testid="stHorizontalBlock"]{flex-wrap:nowrap!important;gap:.6rem!important;}
 [data-testid="stColumn"],[data-testid="column"]{min-width:0!important;flex:1 1 0!important;width:auto!important;}
 </style>
@@ -255,14 +267,30 @@ def intro_art():
             f"<div class='float' style='width:140px;margin-bottom:22px'>{hot_balloon(PINK, PINK2)}</div></div>")
 
 
-def round_balloon(text):
+def round_balloon(content):
+    """A number (3, 2, 1) is shown big; text with '|' separators is shown as small white lines."""
+    def w(ch):
+        return 1.0 if ord(ch) > 0x2E80 else 0.55
+    if str(content).isdigit():
+        label = ("<text x='100' y='108' text-anchor='middle' dominant-baseline='central' "
+                 f"font-family='Fraunces, serif' font-size='140' font-weight='800' fill='#fff'>{content}</text>")
+    else:
+        lines = str(content).split("|")
+        widest = max(sum(w(c) for c in ln) for ln in lines)
+        size = max(14, min(30, int(150 / widest)))
+        gap = size * 1.45
+        top = 108 - gap * (len(lines) - 1) / 2
+        font = HF.replace("'", "")
+        label = "".join(
+            f"<text x='100' y='{top + i * gap:.0f}' text-anchor='middle' dominant-baseline='central' "
+            f"font-family='{font}, serif' font-size='{size}' font-weight='700' fill='#fff'>{ln}</text>"
+            for i, ln in enumerate(lines))
     return ("<div class='rb'><svg viewBox='0 0 200 280' xmlns='http://www.w3.org/2000/svg' style='width:100%;height:auto;display:block'>"
             "<path d='M100 10 C150 10 185 50 185 105 C185 160 140 205 100 215 C60 205 15 160 15 105 C15 50 50 10 100 10 Z' fill='#111'/>"
             "<ellipse cx='68' cy='62' rx='14' ry='28' fill='#fff' opacity='.12' transform='rotate(-25 68 62)'/>"
             "<path d='M92 214 L108 214 L100 228 Z' fill='#111'/>"
             "<path d='M100 228 C86 244 114 256 100 276' stroke='#555' fill='none' stroke-width='2'/>"
-            f"<text x='100' y='108' text-anchor='middle' dominant-baseline='central' font-family='Fraunces, serif' font-size='140' font-weight='800' fill='#fff'>{text}</text>"
-            "</svg></div>")
+            + label + "</svg></div>")
 
 
 def confetti_html(colors, n=50):
@@ -344,7 +372,7 @@ elif step == "countdown":
     function tick(){{
       let d=Math.max(0,target-Date.now())/1000;
       const v=[["DAYS",Math.floor(d/86400)],["HOURS",Math.floor(d%86400/3600)],["MINS",Math.floor(d%3600/60)],["SECS",Math.floor(d%60)]];
-      document.getElementById("cd").innerHTML=v.map(x=>`<div style="background:#fffdf7;border:1px solid #e0d6bf;border-radius:12px;box-shadow:0 4px 0 #e8e0c8;padding:12px 0;width:80px;text-align:center"><div style="font-size:2.2rem;font-weight:800">${{String(x[1]).padStart(2,"0")}}</div><div style="font:700 .6rem 'DM Sans',sans-serif;color:#777;letter-spacing:.1em">${{x[0]}}</div></div>`).join("");
+      document.getElementById("cd").innerHTML=v.map(x=>`<div style="background:#fffdf7;border:1px solid #e0d6bf;border-radius:12px;box-shadow:0 4px 0 #e8e0c8;padding:12px 0;width:80px;text-align:center"><div style="font-size:2.2rem;font-weight:800">${{String(x[1]).padStart(2,"0")}}</div><div style="font:700 .78rem 'DM Sans',sans-serif;color:#666;letter-spacing:.08em">${{x[0]}}</div></div>`).join("");
     }}
     tick();setInterval(tick,1000);
     </script>""", height=110)
@@ -382,7 +410,7 @@ elif step == "guess":
 .st-key-pick_girl button{{background-color:#fde7ee!important;background-image:url("{balloon_uri(PINK, PINK2)}")!important;}}
 .st-key-pick_boy button{{background-color:#e0eff7!important;background-image:url("{balloon_uri(BLUE, BLUE2)}")!important;}}
 .st-key-pick_girl button p,.st-key-pick_boy button p{{font-family:{HF},serif!important;font-weight:800;font-size:{PICK_REM};line-height:1.2;margin:0;text-align:center;}}
-.st-key-pick_girl button p::after,.st-key-pick_boy button p::after{{display:block;font-family:{BF},sans-serif;font-weight:500;font-size:.72rem;margin-top:.5rem;opacity:.85;}}
+.st-key-pick_girl button p::after,.st-key-pick_boy button p::after{{display:block;font-family:{BF},sans-serif;font-weight:500;font-size:.88rem;margin-top:.5rem;opacity:.85;}}
 .st-key-pick_girl button p::after{{content:"{t['sg']}";}} .st-key-pick_boy button p::after{{content:"{t['sb']}";}}
 .st-key-pick_girl button p{{color:#F08784!important;}} .st-key-pick_boy button p{{color:#70C2FA!important;}}
 .st-key-pick_girl button:hover,.st-key-pick_boy button:hover{{filter:brightness(.97);}}
@@ -426,7 +454,7 @@ elif step == "votes":
 
 elif step == "ready":
     hero(f"{HOSTS} · {t['rev']}", t["r1"], t["r2"])
-    st.markdown(round_balloon(3), unsafe_allow_html=True)
+    st.markdown(round_balloon(t["bt"]), unsafe_allow_html=True)
     st.markdown(f"<div class='sub'><i><b>{t['gather']}</b></i></div>", unsafe_allow_html=True)
     if st.button(t["pop"] + " ✺"):
         ss.popped = True
