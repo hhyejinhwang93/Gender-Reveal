@@ -57,7 +57,7 @@ T = {
         "save": "Save secret", "go": "Smash! Start the reveal", "reset": "Reset everything",
     },
     "Korean (한국어)": {
-        "eyebrow": "루미의 젠더리빌", "i1": "공주님일까요?", "i2": "왕자님일까요?",
+        "eyebrow": "루미의 성별은 과연!??", "i1": "공주님일까요?", "i2": "왕자님일까요?",
         "isub": "루미의 성별을 함께 맞혀보세요.",
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
