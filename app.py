@@ -120,16 +120,16 @@ def save(state):
 # ───────────── STYLE ─────────────
 st.markdown("""
 <style>
-<style>
-/* 구글 폰트: Fraunces(디스플레이)와 한글/중국어용 Noto Sans 폰트 추가 */
+/* 구글 공식 서버에서 Fraunces(영어 대제목), Noto Sans(한글/중국어 본문 및 제목)를 올바른 주소로 로드 */
 @import url('https://googleapis.com');
 
 .stApp { background: #fbf6ee; }
 
-/* 폰트 기본 설정 및 언어별 자연스러운 폰트 분기 */
+/* 1. 한글/중국어 가독성을 위해 자연스러운 고딕체(Noto Sans) 계열을 기본 폰트로 지정 */
+/* 2. line-height: 1.6으로 설정하여 줄 사이 간격을 시원하고 보기 좋게 넓힘 */
 html, body, [class*="css"], .stMarkdown, .stButton, input { 
     font-family: 'DM Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif; 
-    line-height: 1.5; /* 👈 전체적인 줄간격을 확보하여 답답함을 해소 */
+    line-height: 1.6; 
 }
 
 #MainMenu, footer, header { visibility: hidden; }
@@ -137,28 +137,40 @@ html, body, [class*="css"], .stMarkdown, .stButton, input {
 
 .eyebrow { color: #000; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; text-align: center; margin-bottom: .4rem; }
 
-/* 공통 대제목 스타일 (기본 검정색 #333333 적용) */
+/* 3. 공통 대제목 스타일: 다음 페이지부터는 무조건 깔끔하고 차분한 검정색(#333333)으로 출력 */
 .hero { 
-    font-family: 'Fraunces', 'Noto Sans KR', serif; 
+    font-family: 'Fraunces', 'Noto Sans KR', 'Noto Sans TC', serif; 
     font-weight: 800; 
-    font-size: 2.3rem; /* 👈 한글/중국어가 너무 비대해 보이지 않도록 살짝 조정 */
-    line-height: 1.3;  /* 👈 제목 줄간격 분리 */
+    font-size: 2.2rem; /* 한글/중국어가 화면을 뚫고 나가지 않도록 크기 밸런스 조정 */
+    line-height: 1.35; /* 대제목 전용 줄간격 분리 */
     text-align: center; 
-    color: #333333; /* 👈 기본 큰 글씨는 차분한 검정 계열 */
+    color: #333333; 
     letter-spacing: -.02em; 
-    margin: .4rem 0; 
+    margin: .6rem 0; 
 }
 
-/* 💡 첫 페이지(Intro)에서만 핑크/하늘색을 유지하기 위한 전용 클래스 분리 */
-.intro-hero { color: #F08784; } /* 첫 줄 핑크 */
-.intro-hero em { color: #70C2FA; font-weight: 700; display: block; font-style: normal; } /* 둘째 줄 하늘색 */
+/* 4. 첫 페이지(Intro) 전용 스타일 분리: 첫 줄 핑크색, 둘째 줄 하늘색 유지 */
+.intro-hero { color: #F08784; } 
+.intro-hero em { color: #70C2FA; font-weight: 700; display: block; font-style: normal; } 
 
-/* 일반 페이지의 em 태그는 일반 검정색으로 똑바로 서게 설정 */
+/* 일반 페이지의 em 태그는 첫 페이지와 달리 기울지 않고 똑바로 서 있는 검정색 글씨로 매핑 */
 .hero em { color: #333333; font-style: normal; display: block; }
 
-.sub { color: #7a7566; text-align: center; margin: .8rem 0 1.4rem; font-size: 0.95rem; line-height: 1.5; }
+.sub { color: #7a7566; text-align: center; margin: .8rem 0 1.4rem; font-size: 0.95rem; line-height: 1.6; }
 .card { background: #fffdf7; border: 1px solid #e0d6bf; border-radius: 14px; padding: 1rem 1.2rem; box-shadow: 5px 5px 0 #e8e0c8; margin: 1rem 0; color: #333; }
+.big-emoji { font-size: 4.5rem; text-align: center; }
+
+.stButton>button { width: 100%; background: #b9513d; color: #fff; border: none; border-radius: 10px; padding: .8rem; font-weight: 700; box-shadow: 0 4px 0 #8f3a2a; }
+.stButton>button:hover { background: #a64632; color: #fff; }
+.stTextInput input { border-radius: 10px; border: 1px solid #d8c9aa; padding: .8rem; }
+.team { border-radius: 120px 120px 20px 20px; padding: 1.6rem .6rem; text-align: center; }
+.team.g { background: #fde7ee; color: #F08784; } .team.b { background: #e0eff7; color: #70C2FA; }
+.team .n { font-family: 'Fraunces', serif; font-weight: 800; font-size: 2.6rem; }
+.team .l { font-weight: 700; color: #000; } .team .who { font-size:.75rem; color: #777; margin-top: .4rem; }
+.sel { text-align: center; font-weight: 700; color: #b9513d; margin: .4rem 0; }
 </style>
+""", unsafe_allow_html=True)
+
 
 # ───────────── STATE / NAV ─────────────
 ss = st.session_state
