@@ -321,8 +321,8 @@ if step == "intro":
 elif step == "name":
     hero("✦", t["n1"], t["n2"])
     ss.name = st.text_input(t["yn"], value=ss.name)
-    ss.country = st.text_input("🌍 " + t["yc"], value=ss.country, placeholder="City, country")
     st.caption("✎ " + t["nh"])
+    ss.country = st.text_input("🌍 " + t["yc"], value=ss.country, placeholder="City, country")
     if st.button(t["inn"] + "  →"):
         if ss.name.strip():
             ss.name = ss.name.strip()
