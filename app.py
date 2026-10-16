@@ -216,7 +216,8 @@ ss.setdefault("country", "")
 ss.setdefault("pick", "")
 ss.setdefault("popped", False)
 
-lang = st.selectbox("🌐 Language / 언어 / 語言", list(T.keys()), label_visibility="collapsed")
+LANG_ORDER = ["Korean (한국어)", "English", "Traditional Chinese (繁體中文)"]  # first one is shown by default
+lang = st.selectbox("🌐 Language / 언어 / 語言", LANG_ORDER, label_visibility="collapsed")
 t = T[lang]
 state = load()
 if DEBUG_DB and st.session_state.get("db_error"):
