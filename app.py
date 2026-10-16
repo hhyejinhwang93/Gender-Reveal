@@ -48,7 +48,7 @@ T = {
         "save": "Save secret", "go": "Smash! Start the reveal", "reset": "Reset everything",
     },
     "Korean (한국어)": {
-        "eyebrow": "루미의 젠더리빌", "i1": "루미는 공주님일까요?", "i2": "왕자님일까요?",
+        "eyebrow": "루미의 젠더리빌", "i1": "공주님일까요?", "i2": "왕자님일까요?",
         "isub": "루미의 성별을 함께 맞혀보세요.",
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
@@ -135,7 +135,7 @@ html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-
 .stButton>button:hover{background:#a64632;color:#fff;}
 .stTextInput input{border-radius:10px;border:1px solid #d8c9aa;padding:.8rem;}
 .team{border-radius:120px 120px 20px 20px;padding:1.6rem .6rem;text-align:center;}
-.team.g{background:#fde7ee;color:#70C2FA;} .team.b{background:#e0eff7;color:#4a6e94;}
+.team.g{background:#fde7ee;color:#F08784;} .team.b{background:#e0eff7;color:#70C2FA;}
 .team .n{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;}
 .team .l{font-weight:700;color:#000;} .team .who{font-size:.75rem;color:#777;margin-top:.4rem;}
 .balloon{width:200px;height:230px;margin:1rem auto;border-radius:50% 50% 48% 48%;background:radial-gradient(circle at 35% 30%,#e8dcff,#c7a8ee);
