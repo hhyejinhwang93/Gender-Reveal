@@ -478,6 +478,9 @@ elif step == "votes":
 
     if st.button(t["chg"]):
         go("guess")
+
+    if st.button(t["back"]):
+        go("countdown")
     st.info(t["wait"])
 
     @st.fragment(run_every=5)
