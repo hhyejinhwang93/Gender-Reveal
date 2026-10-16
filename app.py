@@ -2,7 +2,9 @@ import copy
 import datetime
 import json
 import os
+import random
 import time
+from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
 import streamlit as st
@@ -61,7 +63,7 @@ T = {
         "tg": "공주님 팀", "tb": "왕자님 팀", "vt": "표", "wait": "투표가 완료되었어요!",
         "smash": "펑!", "chg": "예측 바꾸기", "back": "← 뒤로",
         "r1": "두구두구두구.", "r2": "과연 결과는.", "gather": "지금부터 집중!",
-        "pop": "눌러서 확인하기! ", "rgirl": "루미는 공주님!", "rboy": "루미는 왕자님!",
+        "pop": "눌러서 확인하기!", "rgirl": "루미는 공주님!", "rboy": "루미는 왕자님!",
         "won": "{t}이 맞혔어요: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
         "save": "저장", "go": "펑! 공개 시작", "reset": "모두 초기화",
@@ -120,14 +122,15 @@ def save(state):
 # ───────────── STYLE ─────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,800;1,9..144,700&family=DM+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,800;1,9..144,700&family=DM+Sans:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
 .stApp{background:#fbf6ee;}
 html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-serif;}
 #MainMenu,footer,header{visibility:hidden;}
 .block-container{max-width:480px;padding-top:2rem;}
 .eyebrow{color:#000;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:.4rem;}
-.hero{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;line-height:1;text-align:center;color:#F08784;letter-spacing:-.02em;margin:.2rem 0;}
-.hero em{color:#70C2FA;font-weight:700;display:block;font-style: normal;}
+.hero{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;line-height:1;text-align:center;color:#000;letter-spacing:-.02em;margin:.2rem 0;}
+.hero em{color:#000;font-weight:700;display:block;font-style:normal;}
+.hero.color{color:#F08784;} .hero.color em{color:#70C2FA;}
 .sub{color:#7a7566;text-align:center;margin:.8rem 0 1.4rem;}
 .card{background:#fffdf7;border:1px solid #e0d6bf;border-radius:14px;padding:1rem 1.2rem;box-shadow:5px 5px 0 #e8e0c8;margin:1rem 0;color:#333;}
 .big-emoji{font-size:4.5rem;text-align:center;}
@@ -138,10 +141,16 @@ html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-
 .team.g{background:#fde7ee;color:#F08784;} .team.b{background:#e0eff7;color:#70C2FA;}
 .team .n{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;}
 .team .l{font-weight:700;color:#000;} .team .who{font-size:.75rem;color:#777;margin-top:.4rem;}
-.balloon{width:200px;height:230px;margin:1rem auto;border-radius:50% 50% 48% 48%;background:radial-gradient(circle at 35% 30%,#e8dcff,#c7a8ee);
- display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:800;font-size:5rem;color:#000;}
+.rb{width:210px;margin:.5rem auto;animation:float 3.5s ease-in-out infinite;}
+.float{animation:float 4s ease-in-out infinite;} .float.d{animation-delay:-2s;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:5;}
+.confetti i{position:absolute;top:-6vh;display:block;opacity:.9;animation-name:fall;animation-timing-function:linear;animation-iteration-count:infinite;}
+@keyframes fall{0%{transform:translateY(0) rotate(0) translateX(0)}50%{transform:translateY(60vh) rotate(360deg) translateX(20px)}100%{transform:translateY(112vh) rotate(720deg) translateX(-10px)}}
 .count{font-family:'Fraunces',serif;font-weight:800;font-size:9rem;text-align:center;color:#b9513d;line-height:1.1;}
 .sel{text-align:center;font-weight:700;color:#b9513d;margin:.4rem 0;}
+[data-testid="stHorizontalBlock"]{flex-wrap:nowrap!important;gap:.6rem!important;}
+[data-testid="stColumn"],[data-testid="column"]{min-width:0!important;flex:1 1 0!important;width:auto!important;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -167,13 +176,76 @@ else:
     DATE_TXT = LOCAL_DT.strftime("%A, %d %B %Y · %H:%M")
 
 
+CJK = not lang.startswith("English")
+if lang.startswith("Korean"):
+    HF, BF = "'Noto Serif KR'", "'Noto Sans KR'"
+elif lang.startswith("Traditional"):
+    HF, BF = "'Noto Serif TC'", "'Noto Sans TC'"
+else:
+    HF, BF = "'Fraunces'", "'DM Sans'"
+PICK_REM = "1.5rem" if CJK else "1.9rem"
+if CJK:
+    st.markdown(f"""<style>
+.hero{{font-family:{HF},serif!important;font-size:1.9rem!important;line-height:1.45!important;letter-spacing:0!important;font-weight:700!important;word-break:keep-all;}}
+html,body,[class*="css"],.stMarkdown,.stButton button,input{{font-family:{BF},'DM Sans',sans-serif!important;}}
+.sub,.card{{line-height:1.7;word-break:keep-all;}}
+</style>""", unsafe_allow_html=True)
+
+
 def go(step):
     ss.step = step
     st.rerun()
 
 
-def hero(eyebrow, l1, l2):
-    st.markdown(f"<div class='eyebrow'>{eyebrow}</div><div class='hero'>{l1}<em>{l2}</em></div>", unsafe_allow_html=True)
+def hero_html(eyebrow, l1, l2, colored=False):
+    cls = "hero color" if colored else "hero"
+    return f"<div class='eyebrow'>{eyebrow}</div><div class='{cls}'>{l1}<em>{l2}</em></div>"
+
+
+def hero(eyebrow, l1, l2, colored=False):
+    st.markdown(hero_html(eyebrow, l1, l2, colored), unsafe_allow_html=True)
+
+
+def hot_balloon(c1, c2):
+    return ("<svg viewBox='0 0 100 130' xmlns='http://www.w3.org/2000/svg' style='width:100%;height:auto;display:block'>"
+            f"<ellipse cx='50' cy='45' rx='36' ry='42' fill='{c1}'/>"
+            f"<ellipse cx='50' cy='45' rx='14' ry='42' fill='{c2}'/>"
+            "<path d='M30 82 L44 106 M70 82 L56 106' stroke='#9a8a78' stroke-width='1.5'/>"
+            "<rect x='42' y='106' width='16' height='13' rx='2' fill='#d8b48f'/></svg>")
+
+
+def balloon_uri(c1, c2):
+    return "data:image/svg+xml;utf8," + quote(hot_balloon(c1, c2))
+
+
+PINK, PINK2, BLUE, BLUE2 = "#eda0bb", "#fbc9db", "#8fc6dc", "#cbe6f3"
+
+
+def intro_art():
+    return ("<div style='display:flex;justify-content:center;align-items:flex-end;gap:8px;margin-bottom:.6rem'>"
+            f"<div class='float d' style='width:105px'>{hot_balloon(BLUE, BLUE2)}</div>"
+            f"<div class='float' style='width:140px;margin-bottom:22px'>{hot_balloon(PINK, PINK2)}</div></div>")
+
+
+def round_balloon(text):
+    return ("<div class='rb'><svg viewBox='0 0 200 280' xmlns='http://www.w3.org/2000/svg' style='width:100%;height:auto;display:block'>"
+            "<path d='M100 10 C150 10 185 50 185 105 C185 160 140 205 100 215 C60 205 15 160 15 105 C15 50 50 10 100 10 Z' fill='#111'/>"
+            "<ellipse cx='68' cy='62' rx='14' ry='28' fill='#fff' opacity='.12' transform='rotate(-25 68 62)'/>"
+            "<path d='M92 214 L108 214 L100 228 Z' fill='#111'/>"
+            "<path d='M100 228 C86 244 114 256 100 276' stroke='#555' fill='none' stroke-width='2'/>"
+            f"<text x='100' y='108' text-anchor='middle' dominant-baseline='central' font-family='Fraunces, serif' font-size='110' font-weight='800' fill='#fff'>{text}</text>"
+            "</svg></div>")
+
+
+def confetti_html(colors, n=50):
+    rnd = random.Random(7)
+    bits = []
+    for _ in range(n):
+        w, h = rnd.randint(6, 11), rnd.randint(10, 18)
+        r = "50%" if rnd.random() < .3 else "2px"
+        bits.append(f"<i style='left:{rnd.randint(0, 100)}%;width:{w}px;height:{h}px;background:{rnd.choice(colors)};"
+                    f"border-radius:{r};animation-duration:{rnd.uniform(5, 10):.1f}s;animation-delay:-{rnd.uniform(0, 10):.1f}s'></i>")
+    return "<div class='confetti'>" + "".join(bits) + "</div>"
 
 
 # ───────────── HOST SIDEBAR ─────────────
@@ -206,8 +278,8 @@ n_guests = len(state["votes"])
 
 # ───────────── PAGES ─────────────
 if step == "intro":
-    st.markdown("<div class='big-emoji'>🎈</div>", unsafe_allow_html=True)
-    hero(t["eyebrow"].format(h=HOSTS), t["i1"], t["i2"])
+    st.markdown(intro_art(), unsafe_allow_html=True)
+    hero(t["eyebrow"].format(h=HOSTS), t["i1"], t["i2"], colored=True)
     st.markdown(f"<div class='sub'>{t['isub'].format(h=HOSTS)}</div>", unsafe_allow_html=True)
     st.markdown(
         f"<div class='card'><b>{t['rev']}</b><br>{DATE_TXT}<br>{TZ_NAME}</div>",
@@ -254,19 +326,33 @@ elif step == "countdown":
 
 elif step == "guess":
     hero("♥", t["g1"], t["g2"])
+
+    def set_pick(v):
+        ss.pick = v
+
+    selected_css = ""
+    if ss.pick:
+        selected_css = (f".st-key-pick_{ss.pick} button{{border:3px solid #b9513d!important;"
+                        "box-shadow:0 0 0 6px #e3d8ec!important;}")
+    st.markdown(f"""<style>
+.st-key-pick_girl button,.st-key-pick_boy button{{
+  width:100%;height:270px;border-radius:130px 130px 22px 22px;border:3px solid transparent!important;
+  box-shadow:none!important;background-repeat:no-repeat!important;background-position:center 26px!important;
+  background-size:130px!important;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1.2rem;}}
+.st-key-pick_girl button{{background-color:#fde7ee!important;background-image:url("{balloon_uri(PINK, PINK2)}")!important;}}
+.st-key-pick_boy button{{background-color:#e0eff7!important;background-image:url("{balloon_uri(BLUE, BLUE2)}")!important;}}
+.st-key-pick_girl button p,.st-key-pick_boy button p{{font-family:{HF},serif!important;font-weight:800;font-size:{PICK_REM};line-height:1.3;margin:0;}}
+.st-key-pick_girl button p{{color:#d9667a;}} .st-key-pick_boy button p{{color:#4a90b8;}}
+.st-key-pick_girl button:hover,.st-key-pick_boy button:hover{{filter:brightness(.97);}}
+{selected_css}
+</style>""", unsafe_allow_html=True)
+
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("<div class='team g'><div style='font-size:3rem'>🎈</div><div class='n' style='font-size:1.8rem'>"
-                    f"{t['girl']}</div></div>", unsafe_allow_html=True)
-        if st.button("🩷", key="pg"):
-            ss.pick = "girl"
+        st.button(t["girl"], key="pick_girl", on_click=set_pick, args=("girl",))
     with c2:
-        st.markdown("<div class='team b'><div style='font-size:3rem'>🎈</div><div class='n' style='font-size:1.8rem'>"
-                    f"{t['boy']}</div></div>", unsafe_allow_html=True)
-        if st.button("💙", key="pb"):
-            ss.pick = "boy"
-    if ss.pick:
-        st.markdown(f"<div class='sel'>✓ {t['girl'] if ss.pick == 'girl' else t['boy']}</div>", unsafe_allow_html=True)
+        st.button(t["boy"], key="pick_boy", on_click=set_pick, args=("boy",))
+
     if st.button(t["mg"] + "  →"):
         if ss.pick:
             state = load()
@@ -307,7 +393,7 @@ elif step == "votes":
 
 elif step == "ready":
     hero(f"{HOSTS} · {t['rev']}", t["r1"], t["r2"])
-    st.markdown("<div class='balloon'>10</div>", unsafe_allow_html=True)
+    st.markdown(round_balloon(3), unsafe_allow_html=True)
     st.markdown(f"<div class='sub'><i><b>{t['gather']}</b></i></div>", unsafe_allow_html=True)
     if st.button(t["pop"] + " ✺"):
         ss.popped = True
@@ -318,20 +404,19 @@ elif step == "reveal":
     slot = st.empty()
     if ss.popped:
         for i in (3, 2, 1):
-            slot.markdown(f"<div class='count'>{i}</div>", unsafe_allow_html=True)
+            slot.markdown(hero_html(f"{HOSTS} · {t['rev']}", t["r1"], t["r2"]) + round_balloon(i), unsafe_allow_html=True)
             time.sleep(1)
         slot.empty()
         ss.popped = False
     secret = load()["secret"]
     is_girl = secret == "girl"
-    emoji, cls = ("🩷", "g") if is_girl else ("💙", "b")
-    st.markdown(f"<div class='big-emoji'>{emoji}</div>", unsafe_allow_html=True)
+    c1_, c2_ = (PINK, PINK2) if is_girl else (BLUE, BLUE2)
+    colors = ["#F08784", "#f7b6c8", "#fbd36b", "#c9a8ee", "#70C2FA", "#fff"] if is_girl else \
+             ["#70C2FA", "#a9dbf5", "#fbd36b", "#c9a8ee", "#F08784", "#fff"]
+    st.markdown(confetti_html(colors), unsafe_allow_html=True)
+    st.markdown(f"<div class='rb' style='width:170px'>{hot_balloon(c1_, c2_)}</div>", unsafe_allow_html=True)
     hero("✦ " + HOSTS, t["rgirl"] if is_girl else t["rboy"], "")
     winners = [n for n, v in state["votes"].items() if v["guess"] == secret]
     team = t["tg"] if is_girl else t["tb"]
     st.markdown(f"<div class='card'>{t['won'].format(t=team, names=', '.join(winners)) if winners else t['nobody']}</div>",
                 unsafe_allow_html=True)
-    if is_girl:
-        st.balloons()
-    else:
-        st.snow()
