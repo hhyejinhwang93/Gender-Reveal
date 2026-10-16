@@ -61,7 +61,7 @@ T = {
         "tg": "공주님 팀", "tb": "왕자님 팀", "vt": "표", "wait": "주최자가 공개를 시작하길 기다리는 중…",
         "smash": "펑!", "chg": "예측 바꾸기", "back": "← 뒤로",
         "r1": "두구두구두구.", "r2": "과연 결과는.", "gather": "지금부터 집중!",
-        "pop": "루미는!!!!", "rgirl": "루미는 공주님!", "rboy": "루미는 왕자님!",
+        "pop": "눌러서 확인하기! ", "rgirl": "루미는 공주님!", "rboy": "루미는 왕자님!",
         "won": "{t}이 맞혔어요: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
         "save": "저장", "go": "펑! 공개 시작", "reset": "모두 초기화",
@@ -125,9 +125,9 @@ st.markdown("""
 html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-serif;}
 #MainMenu,footer,header{visibility:hidden;}
 .block-container{max-width:480px;padding-top:2rem;}
-.eyebrow{color:#c0503c;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:.4rem;}
+.eyebrow{color:#A8486A;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:.4rem;}
 .hero{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;line-height:1;text-align:center;color:#000;letter-spacing:-.02em;margin:.2rem 0;}
-.hero em{color:#a8486a;font-weight:700;display:block;}
+.hero em{color:#70C2FA;font-weight:700;display:block;}
 .sub{color:#7a7566;text-align:center;margin:.8rem 0 1.4rem;}
 .card{background:#fffdf7;border:1px solid #e0d6bf;border-radius:14px;padding:1rem 1.2rem;box-shadow:5px 5px 0 #e8e0c8;margin:1rem 0;color:#333;}
 .big-emoji{font-size:4.5rem;text-align:center;}
@@ -135,7 +135,7 @@ html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-
 .stButton>button:hover{background:#a64632;color:#fff;}
 .stTextInput input{border-radius:10px;border:1px solid #d8c9aa;padding:.8rem;}
 .team{border-radius:120px 120px 20px 20px;padding:1.6rem .6rem;text-align:center;}
-.team.g{background:#fde7ee;color:#a8486a;} .team.b{background:#e0eff7;color:#4a6e94;}
+.team.g{background:#fde7ee;color:#70C2FA;} .team.b{background:#e0eff7;color:#4a6e94;}
 .team .n{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;}
 .team .l{font-weight:700;color:#000;} .team .who{font-size:.75rem;color:#777;margin-top:.4rem;}
 .balloon{width:200px;height:230px;margin:1rem auto;border-radius:50% 50% 48% 48%;background:radial-gradient(circle at 35% 30%,#e8dcff,#c7a8ee);
