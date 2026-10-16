@@ -3,14 +3,20 @@ import datetime
 import json
 import os
 import time
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 import streamlit.components.v1 as components
 
 # ───────────── EDIT THESE ─────────────
-HOSTS = "Mia & Leo"                       # parents' names
+HOSTS = "Hyejin & Jay"                       # parents' names
 REVEAL_ISO = "2026-11-09T16:00:00+01:00"  # reveal date/time with UTC offset
-TIMEZONE_LABEL = "Europe/Berlin"
+# 언어별로 보여줄 시간대 (Time zone shown for each language)
+TZ_BY_LANG = {
+    "English": "Europe/Berlin",
+    "Korean (한국어)": "Asia/Seoul",
+    "Traditional Chinese (繁體中文)": "Asia/Taipei",
+}
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -42,42 +48,42 @@ T = {
         "save": "Save secret", "go": "Smash! Start the reveal", "reset": "Reset everything",
     },
     "Korean (한국어)": {
-        "eyebrow": "{h}의 축하 파티", "i1": "작은 비밀 하나.", "i2": "가득한 사랑.",
-        "isub": "{h}의 달콤한 깜짝 소식을 함께 맞혀보세요.",
+        "eyebrow": "루미의 젠더리빌", "i1": "루미는 공주님일까요?", "i2": "왕자님일까요?",
+        "isub": "루미의 성별을 함께 맞혀보세요.",
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
-        "n1": "먼저,", "n2": "당신을 알려주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
+        "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
         "inn": "참여할게요", "needn": "이름을 입력해주세요.",
-        "c1": "달콤한", "c2": "카운트다운.", "rg": "맞히러 가기",
+        "c1": "루미의", "c2": "성별.", "rg": "맞히러 가기",
         "cnote": "공개 직전까지 예측을 바꿀 수 있어요.",
         "g1": "당신의", "g2": "예감은?", "girl": "공주님", "boy": "왕자님",
         "mg": "이걸로 할게요", "pick": "먼저 팀을 선택해주세요.",
-        "v1": "달콤한", "v2": "투표 현황.", "va": "{n}님으로 투표 중",
+        "v1": "두근두근", "v2": "투표 현황.", "va": "{n}님으로 투표 중",
         "tg": "공주님 팀", "tb": "왕자님 팀", "vt": "표", "wait": "주최자가 공개를 시작하길 기다리는 중…",
         "smash": "펑!", "chg": "예측 바꾸기", "back": "← 뒤로",
-        "r1": "작은 아기.", "r2": "큰 공개 에너지.", "gather": "가족을 모두 모아주세요. 지금이 하이라이트!",
-        "pop": "비밀을 터뜨려요!", "rgirl": "공주님이에요!", "rboy": "왕자님이에요!",
-        "won": "{t} 정답: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
+        "r1": "두구두구두구.", "r2": "과연 결과는.", "gather": "지금부터 집중!",
+        "pop": "루미는!!!!", "rgirl": "루미는 공주님!", "rboy": "루미는 왕자님!",
+        "won": "{t}이 맞혔어요: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
         "save": "저장", "go": "펑! 공개 시작", "reset": "모두 초기화",
     },
     "Traditional Chinese (繁體中文)": {
-        "eyebrow": "{h} 的慶祝派對", "i1": "一個小秘密。", "i2": "滿滿的愛。",
-        "isub": "{h} 邀請你一起猜猜看，分享我們最甜蜜的驚喜。",
-        "rev": "寶寶性別揭曉", "start": "開始", "loved": "已加入的親友：{n}",
-        "n1": "首先，", "n2": "讓我們認識你。", "yn": "你的名字", "yc": "目前所在地（選填）",
+        "eyebrow": "Lumi 的性別揭曉派對", "i1": "Lumi 是小公主，", "i2": "還是小王子呢？",
+        "isub": "{h} 邀請你一起來猜猜 Lumi 的性別！",
+        "rev": "性別揭曉", "start": "開始", "loved": "已加入的家人：{n} 位",
+        "n1": "首先，", "n2": "請告訴我們你的名字。", "yn": "你的名字", "yc": "你現在在哪裡？（選填）",
         "inn": "我要參加", "needn": "請輸入你的名字。",
-        "c1": "最甜蜜的", "c2": "倒數計時。", "rg": "我準備好要猜了",
-        "cnote": "不用等，揭曉前都可以修改你的答案。",
-        "g1": "你的", "g2": "直覺是？", "girl": "女寶", "boy": "男寶",
-        "mg": "這是我的答案", "pick": "請先選擇一隊。",
-        "v1": "最甜蜜的", "v2": "投票結果。", "va": "目前以 {n} 的身分投票",
-        "tg": "女寶隊", "tb": "男寶隊", "vt": "票", "wait": "等待主辦人開始揭曉…",
+        "c1": "Lumi 的", "c2": "性別倒數。", "rg": "我要來猜",
+        "cnote": "揭曉前都可以修改答案喔！",
+        "g1": "你的", "g2": "直覺是？", "girl": "小公主", "boy": "小王子",
+        "mg": "就決定是這個！", "pick": "請先選擇一隊喔。",
+        "v1": "緊張刺激的", "v2": "投票結果。", "va": "目前以 {n} 的身分投票",
+        "tg": "小公主隊", "tb": "小王子隊", "vt": "票", "wait": "等待主辦人開始揭曉…",
         "smash": "砰！", "chg": "修改答案", "back": "← 返回",
-        "r1": "小小人兒。", "r2": "超大揭曉能量。", "gather": "把大家都叫來，精彩時刻就要到了！",
-        "pop": "戳破秘密！", "rgirl": "是女寶！", "rboy": "是男寶！",
-        "won": "{t} 猜對了：{names}", "nobody": "沒人猜中，大家都是贏家！",
-        "host": "主辦人控制面板", "pin": "主辦人 PIN", "secret": "秘密答案", "sel": "請選擇…",
-        "save": "儲存答案", "go": "砰！開始揭曉", "reset": "全部重設",
+        "r1": "咚咚咚咚咚…", "r2": "答案即將揭曉！", "gather": "接下來請集中注意力！",
+        "pop": "Lumi 是…！！！", "rgirl": "Lumi 是小公主！", "rboy": "Lumi 是小王子！",
+        "won": "{t}猜對了：{names}", "nobody": "沒有人猜中，大家都是贏家！",
+        "host": "主辦人設定", "pin": "主辦人 PIN", "secret": "秘密性別", "sel": "請選擇…",
+        "save": "儲存", "go": "砰！開始揭曉", "reset": "全部重設",
     },
 }
 
@@ -151,6 +157,15 @@ lang = st.selectbox("🌐 Language / 언어 / 語言", list(T.keys()), label_vis
 t = T[lang]
 state = load()
 
+TZ_NAME = TZ_BY_LANG[lang]
+LOCAL_DT = REVEAL_DT.astimezone(ZoneInfo(TZ_NAME))
+if lang.startswith("Korean"):
+    DATE_TXT = f"{LOCAL_DT.year}년 {LOCAL_DT.month}월 {LOCAL_DT.day}일 {LOCAL_DT.strftime('%H:%M')}"
+elif lang.startswith("Traditional"):
+    DATE_TXT = f"{LOCAL_DT.year}年{LOCAL_DT.month}月{LOCAL_DT.day}日 {LOCAL_DT.strftime('%H:%M')}"
+else:
+    DATE_TXT = LOCAL_DT.strftime("%A, %d %B %Y · %H:%M")
+
 
 def go(step):
     ss.step = step
@@ -195,7 +210,7 @@ if step == "intro":
     hero(t["eyebrow"].format(h=HOSTS), t["i1"], t["i2"])
     st.markdown(f"<div class='sub'>{t['isub'].format(h=HOSTS)}</div>", unsafe_allow_html=True)
     st.markdown(
-        f"<div class='card'><b>{t['rev']}</b><br>{REVEAL_DT.strftime('%A, %d %B %Y · %H:%M')}<br>{TIMEZONE_LABEL}</div>",
+        f"<div class='card'><b>{t['rev']}</b><br>{DATE_TXT}<br>{TZ_NAME}</div>",
         unsafe_allow_html=True)
     if st.button(t["start"] + "  →"):
         go("name")
@@ -230,7 +245,7 @@ elif step == "countdown":
     }}
     tick();setInterval(tick,1000);
     </script>""", height=110)
-    st.markdown(f"<div class='sub'>{REVEAL_DT.strftime('%d %B %Y · %H:%M')} · {TIMEZONE_LABEL}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='sub'>{DATE_TXT} · {TZ_NAME}</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='card' style='text-align:center'>{t['cnote']}</div>", unsafe_allow_html=True)
     if st.button(t["rg"] + "  →"):
         go("guess")
