@@ -12,14 +12,14 @@ import streamlit.components.v1 as components
 
 # ───────────── EDIT THESE ─────────────
 HOSTS = "Hyejin & Jay"                       # parents' names
-REVEAL_ISO = "2026-11-09T13:00:00+01:00"  # reveal date/time with UTC offset
+REVEAL_ISO = "2026-11-09T16:00:00+01:00"  # reveal date/time with UTC offset
 # 언어별로 보여줄 시간대 (Time zone shown for each language)
 TZ_BY_LANG = {
     "English": "Europe/Berlin",
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
-DEBUG_DB = False   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
+DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -59,7 +59,7 @@ T = {
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
         "inn": "다음", "needn": "이름을 입력해주세요.",
-        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가기",
+        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가",
         "cnote": "공개 직전까지 예측을 바꿀 수 있어요.",
         "g1": "공주님일까요?", "g2": "왕자님일까요?", "girl": "공주님", "boy": "왕자님",
         "mg": "이걸로 할게요", "pick": "먼저 팀을 선택해주세요.",
@@ -71,7 +71,7 @@ T = {
         "won": "{t}이 맞혔어요: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
         "sg": "핑크 팀", "sb": "블루 팀",
         "bt": "두구두구두구|루미의|성별은?!!",
-        "nh": "여기에 입력한 이름을 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
+        "nh": "여기에 입력한 이름을 대문자·소문자까지 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
         "save": "저장", "go": "펑! 공개 시작", "reset": "모두 초기화",
     },
@@ -277,8 +277,8 @@ def round_balloon(content):
     else:
         lines = str(content).split("|")
         widest = max(sum(w(c) for c in ln) for ln in lines)
-        size = max(14, min(30, int(150 / widest)))
-        gap = size * 1.45
+        size = max(12, min(22, int(105 / widest)))
+        gap = size * 1.5
         top = 108 - gap * (len(lines) - 1) / 2
         font = HF.replace("'", "")
         label = "".join(
