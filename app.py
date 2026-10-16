@@ -12,14 +12,14 @@ import streamlit.components.v1 as components
 
 # ───────────── EDIT THESE ─────────────
 HOSTS = "Hyejin & Jay"                       # parents' names
-REVEAL_ISO = "2026-11-09T16:00:00+01:00"  # reveal date/time with UTC offset
+REVEAL_ISO = "2026-11-09T12:00:00+01:00"  # reveal date/time with UTC offset
 # 언어별로 보여줄 시간대 (Time zone shown for each language)
 TZ_BY_LANG = {
     "English": "Europe/Berlin",
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
-DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
+DEBUG_DB = False   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -62,7 +62,7 @@ T = {
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
         "inn": "다음", "needn": "이름을 입력해주세요.",
-        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가",
+        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가기",
         "cnote": "공개 직전까지 예측을 바꿀 수 있어요.",
         "g1": "공주님일까요?", "g2": "왕자님일까요?", "girl": "공주님", "boy": "왕자님",
         "mg": "이걸로 할게요", "pick": "먼저 팀을 선택해주세요.",
