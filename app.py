@@ -120,30 +120,45 @@ def save(state):
 # ───────────── STYLE ─────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,800;1,9..144,700&family=DM+Sans:wght@400;500;700&display=swap');
-.stApp{background:#fbf6ee;}
-html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-serif;}
-#MainMenu,footer,header{visibility:hidden;}
-.block-container{max-width:480px;padding-top:2rem;}
-.eyebrow{color:#000;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:.4rem;}
-.hero{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;line-height:1;text-align:center;color:#F08784;letter-spacing:-.02em;margin:.2rem 0;}
-.hero em{color:#70C2FA;font-weight:700;display:block;font-style: normal;}
-.sub{color:#7a7566;text-align:center;margin:.8rem 0 1.4rem;}
-.card{background:#fffdf7;border:1px solid #e0d6bf;border-radius:14px;padding:1rem 1.2rem;box-shadow:5px 5px 0 #e8e0c8;margin:1rem 0;color:#333;}
-.big-emoji{font-size:4.5rem;text-align:center;}
-.stButton>button{width:100%;background:#b9513d;color:#fff;border:none;border-radius:10px;padding:.8rem;font-weight:700;box-shadow:0 4px 0 #8f3a2a;}
-.stButton>button:hover{background:#a64632;color:#fff;}
-.stTextInput input{border-radius:10px;border:1px solid #d8c9aa;padding:.8rem;}
-.team{border-radius:120px 120px 20px 20px;padding:1.6rem .6rem;text-align:center;}
-.team.g{background:#fde7ee;color:#F08784;} .team.b{background:#e0eff7;color:#70C2FA;}
-.team .n{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;}
-.team .l{font-weight:700;color:#000;} .team .who{font-size:.75rem;color:#777;margin-top:.4rem;}
-.balloon{width:200px;height:230px;margin:1rem auto;border-radius:50% 50% 48% 48%;background:radial-gradient(circle at 35% 30%,#e8dcff,#c7a8ee);
- display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:800;font-size:5rem;color:#000;}
-.count{font-family:'Fraunces',serif;font-weight:800;font-size:9rem;text-align:center;color:#b9513d;line-height:1.1;}
-.sel{text-align:center;font-weight:700;color:#b9513d;margin:.4rem 0;}
+<style>
+/* 구글 폰트: Fraunces(디스플레이)와 한글/중국어용 Noto Sans 폰트 추가 */
+@import url('https://googleapis.com');
+
+.stApp { background: #fbf6ee; }
+
+/* 폰트 기본 설정 및 언어별 자연스러운 폰트 분기 */
+html, body, [class*="css"], .stMarkdown, .stButton, input { 
+    font-family: 'DM Sans', 'Noto Sans KR', 'Noto Sans TC', sans-serif; 
+    line-height: 1.5; /* 👈 전체적인 줄간격을 확보하여 답답함을 해소 */
+}
+
+#MainMenu, footer, header { visibility: hidden; }
+.block-container { max-width: 480px; padding-top: 2rem; }
+
+.eyebrow { color: #000; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; text-align: center; margin-bottom: .4rem; }
+
+/* 공통 대제목 스타일 (기본 검정색 #333333 적용) */
+.hero { 
+    font-family: 'Fraunces', 'Noto Sans KR', serif; 
+    font-weight: 800; 
+    font-size: 2.3rem; /* 👈 한글/중국어가 너무 비대해 보이지 않도록 살짝 조정 */
+    line-height: 1.3;  /* 👈 제목 줄간격 분리 */
+    text-align: center; 
+    color: #333333; /* 👈 기본 큰 글씨는 차분한 검정 계열 */
+    letter-spacing: -.02em; 
+    margin: .4rem 0; 
+}
+
+/* 💡 첫 페이지(Intro)에서만 핑크/하늘색을 유지하기 위한 전용 클래스 분리 */
+.intro-hero { color: #F08784; } /* 첫 줄 핑크 */
+.intro-hero em { color: #70C2FA; font-weight: 700; display: block; font-style: normal; } /* 둘째 줄 하늘색 */
+
+/* 일반 페이지의 em 태그는 일반 검정색으로 똑바로 서게 설정 */
+.hero em { color: #333333; font-style: normal; display: block; }
+
+.sub { color: #7a7566; text-align: center; margin: .8rem 0 1.4rem; font-size: 0.95rem; line-height: 1.5; }
+.card { background: #fffdf7; border: 1px solid #e0d6bf; border-radius: 14px; padding: 1rem 1.2rem; box-shadow: 5px 5px 0 #e8e0c8; margin: 1rem 0; color: #333; }
 </style>
-""", unsafe_allow_html=True)
 
 # ───────────── STATE / NAV ─────────────
 ss = st.session_state
@@ -173,7 +188,15 @@ def go(step):
 
 
 def hero(eyebrow, l1, l2):
-    st.markdown(f"<div class='eyebrow'>{eyebrow}</div><div class='hero'>{l1}<em>{l2}</em></div>", unsafe_allow_html=True)
+    # 첫 페이지용 텍스트인지 판별하기 위한 조건 설정
+    # 번역 딕셔너리에서 첫 페이지에 쓰이는 문장(A little secret / 공주님일까요?)일 때만 특수 클래스 적용
+    if l1 in [T["English"]["i1"], T["Korean (한국어)"]["i1"], T["Traditional Chinese (繁體中文)"]["i1"]]:
+        hero_class = "hero intro-hero"
+    else:
+        hero_class = "hero"
+        
+    st.markdown(f"<div class='eyebrow'>{eyebrow}</div><div class='{hero_class}'>{l1}<em>{l2}</em></div>", unsafe_allow_html=True)
+
 
 
 # ───────────── HOST SIDEBAR ─────────────
