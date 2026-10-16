@@ -95,7 +95,11 @@ T = {
 def sb_client():
     try:
         from supabase import create_client
-        return create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
+        url = str(st.secrets["SUPABASE_URL"]).strip().strip('"').rstrip("/")
+        for tail in ("/rest/v1", "/rest"):
+            if url.endswith(tail):
+                url = url[: -len(tail)]
+        return create_client(url, str(st.secrets["SUPABASE_KEY"]).strip())
     except Exception:
         return None
 
