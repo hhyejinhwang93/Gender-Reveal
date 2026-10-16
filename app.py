@@ -387,7 +387,7 @@ elif step == "name":
             existing = state["votes"].get(ss.name)
             if existing:
                 ss.pick = existing["guess"]
-            go("countdown")
+            go("guess")
         else:
             st.error(t["needn"])
     if st.button(t["back"]):
@@ -409,9 +409,9 @@ elif step == "countdown":
     st.markdown(f"<div class='sub'>{DATE_TXT} · {TZ_NAME}</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='card' style='text-align:center'>{t['cnote']}</div>", unsafe_allow_html=True)
     if st.button(t["rg"] + "  →"):
-        go("guess")
+        go("votes")
     if st.button(t["back"]):
-        go("name")
+        go("guess")
 
 elif step == "guess":
     hero("♥", t["g1"], t["g2"], colored=True)
@@ -430,7 +430,7 @@ elif step == "guess":
             entry["late"] = True
         stt["votes"][ss.name] = entry
         save(stt)
-        ss.step = "ready" if late else "votes"
+        ss.step = "countdown"
 
     selected_css = ""
     if ss.pick:
@@ -459,7 +459,7 @@ elif step == "guess":
     with c2:
         st.button(t["boy"], key="pick_boy", on_click=choose, args=("boy",))
     if st.button(t["back"]):
-        go("countdown")
+        go("name")
 
 elif step == "votes":
     hero("✦", t["v1"], t["v2"])
