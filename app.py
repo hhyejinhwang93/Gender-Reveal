@@ -12,14 +12,14 @@ import streamlit.components.v1 as components
 
 # ───────────── EDIT THESE ─────────────
 HOSTS = "Hyejin & Jay"                       # parents' names
-REVEAL_ISO = "2026-11-09T12:00:00+01:00"  # reveal date/time with UTC offset
+REVEAL_ISO = "2026-11-09T16:00:00+01:00"  # reveal date/time with UTC offset
 # 언어별로 보여줄 시간대 (Time zone shown for each language)
 TZ_BY_LANG = {
     "English": "Europe/Berlin",
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
-DEBUG_DB = False   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
+DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -62,7 +62,7 @@ T = {
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
         "inn": "다음", "needn": "이름을 입력해주세요.",
-        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가기",
+        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가",
         "cnote": "공개 직전까지 예측을 바꿀 수 있어요.",
         "g1": "공주님일까요?", "g2": "왕자님일까요?", "girl": "공주님", "boy": "왕자님",
         "mg": "이걸로 할게요", "pick": "먼저 팀을 선택해주세요.",
@@ -196,6 +196,7 @@ html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-
 .sel{text-align:center;font-weight:700;color:#b9513d;margin:.4rem 0;}
 .stApp{color:#2b2b2b;}
 .eyebrow{font-size:.85rem;}
+.eyebrow.big{font-size:1.25rem;font-weight:700;letter-spacing:.06em;margin-bottom:.7rem;}
 .sub{font-size:1.12rem;} .card{font-size:1.12rem;}
 .stButton button p{font-size:1.12rem;}
 [data-testid="stCaptionContainer"],.stCaption{font-size:1rem!important;color:#5f5a4c!important;}
@@ -254,13 +255,14 @@ def go(step):
     st.rerun()
 
 
-def hero_html(eyebrow, l1, l2, colored=False):
+def hero_html(eyebrow, l1, l2, colored=False, big=False):
     cls = "hero color" if colored else "hero"
-    return f"<div class='eyebrow'>{eyebrow}</div><div class='{cls}'>{l1}<em>{l2}</em></div>"
+    ecls = "eyebrow big" if big else "eyebrow"
+    return f"<div class='{ecls}'>{eyebrow}</div><div class='{cls}'>{l1}<em>{l2}</em></div>"
 
 
-def hero(eyebrow, l1, l2, colored=False):
-    st.markdown(hero_html(eyebrow, l1, l2, colored), unsafe_allow_html=True)
+def hero(eyebrow, l1, l2, colored=False, big=False):
+    st.markdown(hero_html(eyebrow, l1, l2, colored, big), unsafe_allow_html=True)
 
 
 def hot_balloon(c1, c2):
@@ -358,7 +360,7 @@ n_guests = len(state["votes"])
 # ───────────── PAGES ─────────────
 if step == "intro":
     st.markdown(intro_art(), unsafe_allow_html=True)
-    hero(t["eyebrow"].format(h=HOSTS), t["i1"], t["i2"], colored=True)
+    hero(t["eyebrow"].format(h=HOSTS), t["i1"], t["i2"], colored=True, big=True)
     st.markdown(f"<div class='sub'>{t['isub'].format(h=HOSTS)}</div>", unsafe_allow_html=True)
     st.markdown(
         f"<div class='card'><b>{t['rev']}</b><br>{DATE_TXT}<br>{TZ_NAME}</div>",
