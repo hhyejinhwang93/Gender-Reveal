@@ -200,14 +200,15 @@ def go(step):
 
 
 def hero(eyebrow, l1, l2):
-    # 첫 페이지용 텍스트인지 판별하기 위한 조건 설정
-    # 번역 딕셔너리에서 첫 페이지에 쓰이는 문장(A little secret / 공주님일까요?)일 때만 특수 클래스 적용
-    if l1 in [T["English"]["i1"], T["Korean (한국어)"]["i1"], T["Traditional Chinese (繁體中文)"]["i1"]]:
+    # ⭕ 텍스트 문장을 비교하는 대신, 현재 앱의 단계(ss.step)가 'intro'인지 직접 검사합니다.
+    # 이렇게 하면 영어, 한국어, 중국어 어떤 언어든 첫 페이지에서 무조건 핑크/하늘색이 나옵니다.
+    if ss.get("step") == "intro":
         hero_class = "hero intro-hero"
     else:
         hero_class = "hero"
         
     st.markdown(f"<div class='eyebrow'>{eyebrow}</div><div class='{hero_class}'>{l1}<em>{l2}</em></div>", unsafe_allow_html=True)
+
 
 
 
