@@ -19,6 +19,7 @@ TZ_BY_LANG = {
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
+DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -99,11 +100,20 @@ def sb_client():
         return None
 
 
+def describe_error(e):
+    parts = [getattr(e, k, "") for k in ("code", "message", "details", "hint")]
+    text = " | ".join(str(x) for x in parts if x)
+    return text or repr(e)
+
+
 def load():
     sb = sb_client()
     if sb:
-        rows = sb.table("kv").select("value").eq("key", "state").execute().data
-        return rows[0]["value"] if rows else copy.deepcopy(DEFAULT)
+        try:
+            rows = sb.table("kv").select("value").eq("key", "state").execute().data
+            return rows[0]["value"] if rows else copy.deepcopy(DEFAULT)
+        except Exception as e:
+            st.session_state["db_error"] = describe_error(e)
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE) as f:
             return json.load(f)
@@ -113,10 +123,13 @@ def load():
 def save(state):
     sb = sb_client()
     if sb:
-        sb.table("kv").upsert({"key": "state", "value": state}).execute()
-    else:
-        with open(DATA_FILE, "w") as f:
-            json.dump(state, f)
+        try:
+            sb.table("kv").upsert({"key": "state", "value": state}).execute()
+            return
+        except Exception as e:
+            st.session_state["db_error"] = describe_error(e)
+    with open(DATA_FILE, "w") as f:
+        json.dump(state, f)
 
 
 # ───────────── STYLE ─────────────
@@ -165,6 +178,8 @@ ss.setdefault("popped", False)
 lang = st.selectbox("🌐 Language / 언어 / 語言", list(T.keys()), label_visibility="collapsed")
 t = T[lang]
 state = load()
+if DEBUG_DB and st.session_state.get("db_error"):
+    st.error("DB error (debug): " + st.session_state["db_error"])
 
 TZ_NAME = TZ_BY_LANG[lang]
 LOCAL_DT = REVEAL_DT.astimezone(ZoneInfo(TZ_NAME))
