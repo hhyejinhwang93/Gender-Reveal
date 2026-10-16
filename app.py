@@ -19,7 +19,7 @@ TZ_BY_LANG = {
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
-DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
+DEBUG_DB = False   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
