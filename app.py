@@ -45,7 +45,7 @@ T = {
         "tg": "Team Girl", "tb": "Team Boy", "vt": "votes", "wait": "Waiting for the host to start the reveal…",
         "smash": "Smash!", "chg": "Change my guess", "back": "← Back",
         "r1": "Small human.", "r2": "Big reveal energy.", "gather": "Gather your people. This is the good part.",
-        "pop": "Let's pop the secret!", "rgirl": "It's a girl!", "rboy": "It's a boy!",
+        "pop": "Let's pop the secret!", "rgirl": "It's a <span class='pk'>girl</span>!", "rboy": "It's a <span class='bl'>boy</span>!",
         "won": "Team {t} called it: {names}", "nobody": "Nobody guessed this one. Everyone wins!",
         "sg": "Team pink skies", "sb": "Team blue skies",
         "host": "Host controls", "pin": "Host PIN", "secret": "The secret", "sel": "Select…",
@@ -65,7 +65,7 @@ T = {
         "tg": "공주님 팀", "tb": "왕자님 팀", "vt": "표", "wait": "투표가 완료되었어요!",
         "smash": "펑!", "chg": "예측 바꾸기", "back": "← 뒤로",
         "r1": "두구두구두구.", "r2": "과연 결과는.", "gather": "지금부터 집중!",
-        "pop": "눌러서 확인하기!", "rgirl": "루미는 공주님!", "rboy": "루미는 왕자님!",
+        "pop": "눌러서 확인하기!", "rgirl": "루미는 <span class='pk'>공주님</span>!", "rboy": "루미는 <span class='bl'>왕자님</span>!",
         "won": "{t}이 맞혔어요: {names}", "nobody": "아무도 못 맞혔어요. 모두가 승자!",
         "sg": "핑크 팀", "sb": "블루 팀",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
@@ -85,7 +85,7 @@ T = {
         "tg": "小公主隊", "tb": "小王子隊", "vt": "票", "wait": "等待主辦人開始揭曉…",
         "smash": "砰！", "chg": "修改答案", "back": "← 返回",
         "r1": "咚咚咚咚咚…", "r2": "答案即將揭曉！", "gather": "接下來請集中注意力！",
-        "pop": "Lumi 是…！！！", "rgirl": "Lumi 是小公主！", "rboy": "Lumi 是小王子！",
+        "pop": "Lumi 是…！！！", "rgirl": "Lumi 是<span class='pk'>小公主</span>！", "rboy": "Lumi 是<span class='bl'>小王子</span>！",
         "won": "{t}猜對了：{names}", "nobody": "沒有人猜中，大家都是贏家！",
         "sg": "粉紅天空隊", "sb": "藍色天空隊",
         "host": "主辦人設定", "pin": "主辦人 PIN", "secret": "秘密性別", "sel": "請選擇…",
@@ -150,6 +150,7 @@ html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-
 .eyebrow{color:#000;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:.4rem;}
 .hero{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;line-height:1;text-align:center;color:#000;letter-spacing:-.02em;margin:.2rem 0;}
 .hero em{color:#000;font-weight:700;display:block;font-style:normal;}
+.hero .pk{color:#F08784;} .hero .bl{color:#70C2FA;}
 .hero.color{color:#F08784;} .hero.color em{color:#70C2FA;}
 .sub{color:#7a7566;text-align:center;margin:.8rem 0 1.4rem;}
 .card{background:#fffdf7;border:1px solid #e0d6bf;border-radius:14px;padding:1rem 1.2rem;box-shadow:5px 5px 0 #e8e0c8;margin:1rem 0;color:#333;}
