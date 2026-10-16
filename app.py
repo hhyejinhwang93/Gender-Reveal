@@ -125,7 +125,7 @@ st.markdown("""
 html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-serif;}
 #MainMenu,footer,header{visibility:hidden;}
 .block-container{max-width:480px;padding-top:2rem;}
-.eyebrow{color:#A8486A;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:.4rem;}
+.eyebrow{color:#F08784;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:.4rem;}
 .hero{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;line-height:1;text-align:center;color:#000;letter-spacing:-.02em;margin:.2rem 0;}
 .hero em{color:#70C2FA;font-weight:700;display:block;}
 .sub{color:#7a7566;text-align:center;margin:.8rem 0 1.4rem;}
