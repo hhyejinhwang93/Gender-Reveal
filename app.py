@@ -23,7 +23,7 @@ DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
-st.set_page_config(page_title="Our Little Baby Reveal", page_icon="🎈", layout="centered")
+st.set_page_config(page_title="Our Little Baby Reveal", page_icon="🎈", layout="centered", initial_sidebar_state="collapsed")
 
 REVEAL_DT = datetime.datetime.fromisoformat(REVEAL_ISO)
 DATA_FILE = "reveal_data.json"
@@ -146,6 +146,7 @@ st.markdown("""
 .stApp{background:#fbf6ee;}
 html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-serif;}
 #MainMenu,footer,header{visibility:hidden;}
+[data-testid="stExpandSidebarButton"],[data-testid="stSidebarCollapsedControl"],[data-testid="collapsedControl"]{visibility:visible!important;}
 .block-container{max-width:480px;padding-top:2rem;}
 .eyebrow{color:#000;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:.4rem;}
 .hero{font-family:'Fraunces',serif;font-weight:800;font-size:2.6rem;line-height:1;text-align:center;color:#000;letter-spacing:-.02em;margin:.2rem 0;}
