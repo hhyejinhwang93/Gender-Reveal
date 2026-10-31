@@ -19,7 +19,7 @@ TZ_BY_LANG = {
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
-DEBUG_DB = False   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
+DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -37,7 +37,7 @@ T = {
         "rev": "Baby reveal", "start": "Let's start", "loved": "Loved ones: {n}. One little secret.",
         "n1": "First, let's", "n2": "get to know you.", "yn": "Your name", "yc": "Joining from (optional)",
         "inn": "Count me in", "needn": "Please enter your name.",
-        "c1": "The sweetest", "c2": "countdown.", "rg": "Check voting status",
+        "c1": "The sweetest", "c2": "countdown.", "rg": "I'm ready to guess",
         "cnote": "No need to wait. You can change your guess right up to the reveal.",
         "g1": "What's your", "g2": "little guess?", "girl": "A girl", "boy": "A boy",
         "mg": "That's my guess", "pick": "Please pick a team first.",
@@ -51,18 +51,19 @@ T = {
         "bt": "Drumroll…|What is|Lumi's|gender?!",
         "me_ok": "🎉 You guessed it right, {n}!", "me_no": "So close, {n}! You guessed {g}, but the answer is {a}.",
         "late": "The reveal has already started, so your guess will not be in the winners' list, but you will still see your own result!",
+        "view": "View guesses", "join": "Join the guessing",
         "me_ask": "Did you vote? Enter the name you used to see your result.", "me_nf": "We couldn't find a vote under that name. Please check the spelling and capital letters.",
         "nh": "Please remember the exact name you enter here, including capital and lowercase letters. You will need it to change your guess later.",
         "host": "Host controls", "pin": "Host PIN", "secret": "The secret", "sel": "Select…",
         "save": "Save secret", "go": "Smash! Start the reveal", "reset": "Reset everything",
     },
     "Korean (한국어)": {
-        "eyebrow": "루미의 성별은 과연!??", "i1": "공주님일까요?", "i2": "왕자님일까요?",
+        "eyebrow": "루미의 젠더리빌", "i1": "공주님일까요?", "i2": "왕자님일까요?",
         "isub": "루미의 성별을 함께 맞혀보세요.",
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
         "inn": "다음", "needn": "이름을 입력해주세요.",
-        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "투표 현황 보러가기",
+        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가",
         "cnote": "공개 직전까지 예측을 바꿀 수 있어요.",
         "g1": "공주님일까요?", "g2": "왕자님일까요?", "girl": "공주님", "boy": "왕자님",
         "mg": "이걸로 할게요", "pick": "먼저 팀을 선택해주세요.",
@@ -76,8 +77,9 @@ T = {
         "bt": "두구두구두구|루미의|성별은?!!",
         "me_ok": "🎉 {n}님, 정답이에요! 맞히셨어요!", "me_no": "{n}님은 {g}을 선택하셨어요. 아쉽지만 정답은 {a}이에요!",
         "late": "공개가 이미 시작되어서 맞힌 사람 명단에는 이름이 올라가지 않지만, 내 결과는 확인할 수 있어요!",
+        "view": "투표 현황 보기", "join": "나도 참여하기",
         "me_ask": "투표하셨나요? 투표할 때 쓴 이름을 입력하면 내 결과를 볼 수 있어요.", "me_nf": "그 이름으로 한 투표를 찾지 못했어요. 철자와 대소문자를 확인해 주세요.",
-        "nh": "여기에 입력한 이름을 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
+        "nh": "여기에 입력한 이름을 대문자·소문자까지 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
         "save": "저장", "go": "펑! 공개 시작", "reset": "모두 초기화",
     },
@@ -87,7 +89,7 @@ T = {
         "rev": "性別揭曉", "start": "開始", "loved": "已加入的家人：{n} 位",
         "n1": "首先，", "n2": "請告訴我們你的名字。", "yn": "你的名字", "yc": "你現在在哪裡？（選填）",
         "inn": "我要參加", "needn": "請輸入你的名字。",
-        "c1": "Lumi 的", "c2": "性別倒數。", "rg": "查看投票狀況",
+        "c1": "Lumi 的", "c2": "性別倒數。", "rg": "我要來猜",
         "cnote": "揭曉前都可以修改答案喔！",
         "g1": "你的", "g2": "直覺是？", "girl": "小公主", "boy": "小王子",
         "mg": "就決定是這個！", "pick": "請先選擇一隊喔。",
@@ -101,6 +103,7 @@ T = {
         "bt": "咚咚咚咚咚…|Lumi 的|性別是？！",
         "me_ok": "🎉 {n}，你猜對了！", "me_no": "{n}，你選的是{g}，答案是{a}喔！",
         "late": "揭曉已經開始，你的答案不會列入猜對名單，但你還是能看到自己的結果！",
+        "view": "查看投票結果", "join": "我也要參加",
         "me_ask": "你有投票嗎？輸入投票時用的名字，就能看到你的結果。", "me_nf": "找不到這個名字的投票，請確認拼字與大小寫。",
         "nh": "請記住你在這裡輸入的名字（包含大小寫），之後想修改答案時需要輸入相同的名字。",
         "host": "主辦人設定", "pin": "主辦人 PIN", "secret": "秘密性別", "sel": "請選擇…",
@@ -203,6 +206,7 @@ html,body,[class*="css"],.stMarkdown,.stButton,input{font-family:'DM Sans',sans-
 label,[data-testid="stWidgetLabel"] p{font-size:1.08rem!important;color:#222!important;}
 .stTextInput input{font-size:1.08rem!important;background:#fff!important;color:#222!important;}
 [data-baseweb="select"]>div{background:#fff!important;color:#222!important;}
+[class*="st-key-view_"] button{background:transparent!important;color:#000!important;box-shadow:none!important;text-decoration:underline;padding:.4rem;}
 .team .l{font-size:1.1rem;} .team .who{font-size:.9rem;}
 [data-testid="stHorizontalBlock"]{flex-wrap:nowrap!important;gap:.6rem!important;}
 [data-testid="stColumn"],[data-testid="column"]{min-width:0!important;flex:1 1 0!important;width:auto!important;}
@@ -367,6 +371,8 @@ if step == "intro":
         unsafe_allow_html=True)
     if st.button(t["start"] + "  →"):
         go("name")
+    if st.button(t["view"], key="view_intro"):
+        go("votes")
     st.caption(t["loved"].format(n=n_guests))
 
 elif step == "name":
@@ -387,9 +393,11 @@ elif step == "name":
             existing = state["votes"].get(ss.name)
             if existing:
                 ss.pick = existing["guess"]
-            go("guess")
+            go("countdown")
         else:
             st.error(t["needn"])
+    if st.button(t["view"], key="view_name"):
+        go("votes")
     if st.button(t["back"]):
         go("intro")
 
@@ -409,9 +417,9 @@ elif step == "countdown":
     st.markdown(f"<div class='sub'>{DATE_TXT} · {TZ_NAME}</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='card' style='text-align:center'>{t['cnote']}</div>", unsafe_allow_html=True)
     if st.button(t["rg"] + "  →"):
-        go("votes")
-    if st.button(t["back"]):
         go("guess")
+    if st.button(t["back"]):
+        go("name")
 
 elif step == "guess":
     hero("♥", t["g1"], t["g2"], colored=True)
@@ -430,7 +438,7 @@ elif step == "guess":
             entry["late"] = True
         stt["votes"][ss.name] = entry
         save(stt)
-        ss.step = "countdown"
+        ss.step = "ready" if late else "votes"
 
     selected_css = ""
     if ss.pick:
@@ -459,12 +467,13 @@ elif step == "guess":
     with c2:
         st.button(t["boy"], key="pick_boy", on_click=choose, args=("boy",))
     if st.button(t["back"]):
-        go("name")
+        go("countdown")
 
 elif step == "votes":
     hero("✦", t["v1"], t["v2"])
-    st.markdown(f"<div class='card'>{t['va'].format(n=ss.name)}<br><small>{t['tg'] if ss.pick == 'girl' else t['tb']}</small></div>",
-                unsafe_allow_html=True)
+    if ss.name in state["votes"]:
+        st.markdown(f"<div class='card'>{t['va'].format(n=ss.name)}<br><small>{t['tg'] if ss.pick == 'girl' else t['tb']}</small></div>",
+                    unsafe_allow_html=True)
 
     def who(side):
         names = [f"{n}{' (' + v['country'] + ')' if v.get('country') else ''}" for n, v in state["votes"].items() if v["guess"] == side]
@@ -476,12 +485,15 @@ elif step == "votes":
     c1.markdown(f"<div class='team g'><div class='n'>{g}</div><div>{t['vt']}</div><div class='l'>{t['tg']}</div><div class='who'>{who('girl')}</div></div>", unsafe_allow_html=True)
     c2.markdown(f"<div class='team b'><div class='n'>{b}</div><div>{t['vt']}</div><div class='l'>{t['tb']}</div><div class='who'>{who('boy')}</div></div>", unsafe_allow_html=True)
 
-    if st.button(t["chg"]):
-        go("guess")
-
-    if st.button(t["back"]):
-        go("countdown")
-    st.info(t["wait"])
+    if ss.name in state["votes"]:
+        if st.button(t["chg"]):
+            go("guess")
+        st.info(t["wait"])
+    else:
+        if st.button(t["join"] + "  →"):
+            go("name")
+        if st.button(t["back"]):
+            go("intro")
 
     @st.fragment(run_every=5)
     def watch():
