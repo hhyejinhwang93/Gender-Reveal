@@ -19,7 +19,7 @@ TZ_BY_LANG = {
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
-DEBUG_DB = False   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
+DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -51,7 +51,9 @@ T = {
         "bt": "Drumroll…|What is|Lumi's|gender?!",
         "me_ok": "🎉 You guessed it right, {n}!", "me_no": "So close, {n}! You guessed {g}, but the answer is {a}.",
         "late": "The reveal has already started, so your guess will not be in the winners' list, but you will still see your own result!",
-        "view": "View guesses", "join": "Join the guessing",
+        "view": "View guesses", "join": "Join the guessing", "vid": "Watch our reveal moment",
+        "undo": "Undo the reveal (keep votes)", "delv": "Delete one vote", "delb": "Delete this vote",
+        "ok_reset": "I understand: this also deletes ALL votes", "need_ok": "Tick the box first.",
         "me_ask": "Did you vote? Enter the name you used to see your result.", "me_nf": "We couldn't find a vote under that name. Please check the spelling and capital letters.",
         "nh": "Please remember the exact name you enter here, including capital and lowercase letters. You will need it to change your guess later.",
         "host": "Host controls", "pin": "Host PIN", "secret": "The secret", "sel": "Select…",
@@ -63,7 +65,7 @@ T = {
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
         "inn": "다음", "needn": "이름을 입력해주세요.",
-        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가기",
+        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가",
         "cnote": "공개 직전까지 예측을 바꿀 수 있어요.",
         "g1": "공주님일까요?", "g2": "왕자님일까요?", "girl": "공주님", "boy": "왕자님",
         "mg": "이걸로 할게요", "pick": "먼저 팀을 선택해주세요.",
@@ -77,7 +79,9 @@ T = {
         "bt": "두구두구두구|루미의|성별은?!!",
         "me_ok": "🎉 {n}님, 정답이에요! 맞히셨어요!", "me_no": "{n}님은 {g}을 선택하셨어요. 아쉽지만 정답은 {a}이에요!",
         "late": "공개가 이미 시작되어서 맞힌 사람 명단에는 이름이 올라가지 않지만, 내 결과는 확인할 수 있어요!",
-        "view": "투표 현황 보기", "join": "나도 참여하기",
+        "view": "투표 현황 보기", "join": "나도 참여하기", "vid": "우리의 공개 순간 영상",
+        "undo": "공개만 되돌리기 (투표는 유지)", "delv": "투표 하나 삭제", "delb": "이 투표 삭제",
+        "ok_reset": "투표가 모두 지워지는 것을 알고 있어요", "need_ok": "먼저 체크해 주세요.",
         "me_ask": "투표하셨나요? 투표할 때 쓴 이름을 입력하면 내 결과를 볼 수 있어요.", "me_nf": "그 이름으로 한 투표를 찾지 못했어요. 철자와 대소문자를 확인해 주세요.",
         "nh": "여기에 입력한 이름을 대문자·소문자까지 정확히 기억해 주세요. 나중에 예측을 바꿀 때 같은 이름을 입력해야 해요.",
         "host": "주최자 설정", "pin": "주최자 PIN", "secret": "비밀 성별", "sel": "선택…",
@@ -103,7 +107,9 @@ T = {
         "bt": "咚咚咚咚咚…|Lumi 的|性別是？！",
         "me_ok": "🎉 {n}，你猜對了！", "me_no": "{n}，你選的是{g}，答案是{a}喔！",
         "late": "揭曉已經開始，你的答案不會列入猜對名單，但你還是能看到自己的結果！",
-        "view": "查看投票結果", "join": "我也要參加",
+        "view": "查看投票結果", "join": "我也要參加", "vid": "觀看我們的揭曉時刻",
+        "undo": "還原揭曉（保留投票）", "delv": "刪除單筆投票", "delb": "刪除這筆投票",
+        "ok_reset": "我知道這會連所有投票一起刪除", "need_ok": "請先勾選。",
         "me_ask": "你有投票嗎？輸入投票時用的名字，就能看到你的結果。", "me_nf": "找不到這個名字的投票，請確認拼字與大小寫。",
         "nh": "請記住你在這裡輸入的名字（包含大小寫），之後想修改答案時需要輸入相同的名字。",
         "host": "主辦人設定", "pin": "主辦人 PIN", "secret": "秘密性別", "sel": "請選擇…",
@@ -347,10 +353,29 @@ with st.sidebar:
                     st.rerun()
                 else:
                     st.warning(t["sel"])
-            if st.button(t["reset"]):
-                save(copy.deepcopy(DEFAULT))
+            if st.button(t["undo"]):
+                state["started"] = False
+                state["secret"] = ""
+                state["votes"] = {n: v for n, v in state["votes"].items() if not v.get("late")}
+                save(state)
                 ss.step, ss.popped = "intro", False
                 st.rerun()
+            names = list(state["votes"].keys())
+            if names:
+                victim = st.selectbox(t["delv"], [t["sel"]] + names)
+                if st.button(t["delb"]) and victim != t["sel"]:
+                    state["votes"].pop(victim, None)
+                    save(state)
+                    st.rerun()
+            st.markdown("---")
+            sure = st.checkbox(t["ok_reset"])
+            if st.button(t["reset"]):
+                if sure:
+                    save(copy.deepcopy(DEFAULT))
+                    ss.step, ss.popped = "intro", False
+                    st.rerun()
+                else:
+                    st.warning(t["need_ok"])
 
 if state["started"]:
     voted = ss.name in state["votes"]
@@ -551,3 +576,13 @@ elif step == "reveal":
                 st.success(t["me_ok"].format(n=me))
             else:
                 st.info(t["me_no"].format(n=me, g=t["girl"] if mine == "girl" else t["boy"], a=answer))
+
+    # Video: either a YouTube link in Streamlit secrets (VIDEO_URL) or a file named reveal.mp4 next to app.py
+    video_url = str(st.secrets.get("VIDEO_URL", "")).strip()
+    here = os.path.dirname(os.path.abspath(__file__))
+    video_file = next((os.path.join(here, f) for f in ("reveal.mp4", "reveal.mov", "reveal.webm")
+                       if os.path.exists(os.path.join(here, f))), "")
+    if video_url or video_file:
+        with extra[1].container():
+            st.caption("🎬 " + t["vid"])
+            st.video(video_url or video_file)
