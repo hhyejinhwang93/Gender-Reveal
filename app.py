@@ -12,14 +12,15 @@ import streamlit.components.v1 as components
 
 # ───────────── EDIT THESE ─────────────
 HOSTS = "Hyejin & Jay"                       # parents' names
-REVEAL_ISO = "2026-11-08T16:00:00+01:00"  # reveal date/time with UTC offset
+REVEAL_ISO = "2026-11-09T16:00:00+01:00"  # reveal date/time with UTC offset
 # 언어별로 보여줄 시간대 (Time zone shown for each language)
 TZ_BY_LANG = {
     "English": "Europe/Berlin",
     "Korean (한국어)": "Asia/Seoul",
     "Traditional Chinese (繁體中文)": "Asia/Taipei",
 }
-DEBUG_DB = False   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
+VIDEO_MUTED = False  # False: 소리 있는 자동재생(일부 폰은 막힐 수 있음) / True: 소리 없이 자동재생
+DEBUG_DB = True   # 문제 해결 중에는 True: 화면에 DB 에러 내용을 보여줘요. 다 해결되면 False
 # Host PIN: set HOST_PIN in Streamlit secrets (default below is only for testing!)
 # ──────────────────────────────────────
 
@@ -65,7 +66,7 @@ T = {
         "rev": "성별 공개", "start": "시작하기", "loved": "참여한 가족: {n}명",
         "n1": "먼저,", "n2": "당신의 이름을 적어주세요.", "yn": "이름", "yc": "현재 계신 곳 (선택)",
         "inn": "다음", "needn": "이름을 입력해주세요.",
-        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가기",
+        "c1": "루미의 성별,", "c2": "공개까지 남은 시간은?", "rg": "성별 예측하러 가",
         "cnote": "공개 직전까지 예측을 바꿀 수 있어요.",
         "g1": "공주님일까요?", "g2": "왕자님일까요?", "girl": "공주님", "boy": "왕자님",
         "mg": "이걸로 할게요", "pick": "먼저 팀을 선택해주세요.",
@@ -556,11 +557,28 @@ elif step == "reveal":
     slot.markdown(
         confetti_html(colors)
         + f"<div class='rb' style='width:170px'>{hot_balloon(c1_, c2_)}</div>"
-        + hero_html("✦ " + HOSTS, t["rgirl"] if is_girl else t["rboy"], "")
-        + f"<div class='card'>{msg}</div>",
+        + hero_html("✦ " + HOSTS, t["rgirl"] if is_girl else t["rboy"], ""),
         unsafe_allow_html=True)
 
+    # 1) video, right under the headline (YouTube link in secrets VIDEO_URL, or a file named reveal.mp4)
+    video_url = str(st.secrets.get("VIDEO_URL", "")).strip()
+    here = os.path.dirname(os.path.abspath(__file__))
+    video_file = next((os.path.join(here, f) for f in ("reveal.mp4", "reveal.mov", "reveal.webm")
+                       if os.path.exists(os.path.join(here, f))), "")
     with extra[0].container():
+        if video_url or video_file:
+            try:
+                st.video(video_url or video_file, autoplay=True, muted=VIDEO_MUTED)
+            except TypeError:  # older Streamlit without autoplay support
+                st.video(video_url or video_file)
+        elif DEBUG_DB:
+            st.caption("(debug) 영상 파일을 못 찾았어요. app.py가 있는 폴더의 파일: " + ", ".join(sorted(os.listdir(here))))
+
+    # 2) which team guessed right
+    extra[1].markdown(f"<div class='card'>{msg}</div>", unsafe_allow_html=True)
+
+    # 3) my own result
+    with extra[2].container():
         me = ss.name if ss.name in state["votes"] else None
         if not me:
             st.caption(t["me_ask"])
@@ -576,13 +594,3 @@ elif step == "reveal":
                 st.success(t["me_ok"].format(n=me))
             else:
                 st.info(t["me_no"].format(n=me, g=t["girl"] if mine == "girl" else t["boy"], a=answer))
-
-    # Video: either a YouTube link in Streamlit secrets (VIDEO_URL) or a file named reveal.mp4 next to app.py
-    video_url = str(st.secrets.get("VIDEO_URL", "")).strip()
-    here = os.path.dirname(os.path.abspath(__file__))
-    video_file = next((os.path.join(here, f) for f in ("reveal.mp4", "reveal.mov", "reveal.webm")
-                       if os.path.exists(os.path.join(here, f))), "")
-    if video_url or video_file:
-        with extra[1].container():
-            st.caption("🎬 " + t["vid"])
-            st.video(video_url or video_file)
